@@ -1,3 +1,4 @@
 node_modules
 Storage
-.env
+.env*
+dist

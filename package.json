@@ -4,6 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "cross-env NODE_ENV=development npm run build && tsx watch src/index.ts",
+    "build": "tsc",
+    "migrate:up": "cross-env NODE_ENV=development npm run build && migrate-mongo up",
+    "migrate:down": "cross-env NODE_ENV=development npm run build && migrate-mongo down",
+    "migrate:status": "cross-env NODE_ENV=development migrate-mongo status",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -13,14 +18,42 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/YoussefShaban20210472/Node-Monolithic-MongoDB-GraphQL-Learning-Management-System/issues"
   },
   "homepage": "https://github.com/YoussefShaban20210472/Node-Monolithic-MongoDB-GraphQL-Learning-Management-System#readme",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express-session": "^1.19.0",
+    "@types/morgan": "^1.9.10",
     "@types/node": "^25.9.2",
+    "cross-env": "^10.1.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.22.4",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@apollo/server": "^5.5.1",
+    "@as-integrations/express5": "^1.1.2",
+    "@graphql-tools/schema": "^10.0.33",
+    "@types/express": "^5.0.6",
+    "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
+    "connect-redis": "^9.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "express-session": "^1.19.0",
+    "graphql": "^16.14.2",
+    "helmet": "^8.2.0",
+    "migrate-mongo": "^14.0.7",
+    "mongodb": "^6.21.0",
+    "morgan": "^1.11.0",
+    "redis": "^6.0.0",
+    "zod": "^4.4.3"
   }
 }
