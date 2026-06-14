@@ -5,7 +5,7 @@ export interface CreateUserInput {
   email: string;
   password: string;
   address: string;
-  role: "STUDENT" | "INSTRUCTOR" | "ADMIN";
+  role: string;
 }
 
 export interface UpdateUserInput {
@@ -15,12 +15,6 @@ export interface UpdateUserInput {
   email?: string;
   address?: string;
 }
-
-export const roleMap = {
-  STUDENT: "STUDENT",
-  INSTRUCTOR: "INSTRUCTOR",
-  ADMIN: "ADMIN",
-} as const;
 
 export interface CreateUserArgs {
   input: CreateUserInput;

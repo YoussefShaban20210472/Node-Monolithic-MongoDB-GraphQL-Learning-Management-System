@@ -21,6 +21,6 @@ export const userResolver = {
   },
 
   Mutation: {
-    createUser: withRole()(createUser),
+    createUser: withRole(["ADMIN"])(createUser),
   },
 };

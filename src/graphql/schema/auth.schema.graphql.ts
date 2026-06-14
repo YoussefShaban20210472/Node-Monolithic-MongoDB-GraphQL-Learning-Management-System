@@ -1,11 +1,11 @@
 export const authSchema: string = `#graphql
-    input loginInput{
+    input LoginInput{
         email: String
         password: String
     }
 
     type Mutation {
-        login(input: loginInput!): User!
+        login(input: LoginInput!): User!
         logout: Boolean!
     }
 `;

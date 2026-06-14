@@ -1,11 +1,5 @@
 export const userSchema: string = `#graphql
 
-    enum UserRole {
-        STUDENT
-        INSTRUCTOR
-        ADMIN
-    }
-
     type User {
         _id: ID!
         firstName: String!
@@ -13,9 +7,9 @@ export const userSchema: string = `#graphql
         phoneNumber: String!
         email: String!
         address: String!
-        role: UserRole!
+        role: String!
         createdAt: String!
-        updatedAt: String
+        updatedAt: String!
     }
 
     input CreateUserInput {
@@ -25,7 +19,7 @@ export const userSchema: string = `#graphql
         email: String!
         password: String!
         address: String!
-        role: UserRole = STUDENT
+        role: String!
     }
 
     input UpdateUserInput {
@@ -35,11 +29,6 @@ export const userSchema: string = `#graphql
         email: String
         address: String
     }
-    input loginInput{
-        email: String
-        password: String
-    }
-
     type Query {
         users: [User!]!
         user(_id: ID!): User
@@ -47,6 +36,5 @@ export const userSchema: string = `#graphql
 
     type Mutation {
         createUser(input: CreateUserInput!): User!
-        login(input: loginInput!): User!
     }
 `;

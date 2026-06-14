@@ -1,14 +1,7 @@
-import dotenv from "dotenv";
-
-const env = process.env.NODE_ENV || "development";
-
-dotenv.config({
-  path: `.env.${env}`,
-});
-
+import "./dist/bootstrap.js";
 export default {
   mongodb: {
-    url: process.env.MONGODB_URI,
+    url: process.env.MONGODB_URL,
     databaseName: process.env.MONGODB_NAME,
 
     options: {

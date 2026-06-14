@@ -38,7 +38,7 @@ router.use(morgan("dev"));
  */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // max requests per window
+  limit: process.env.NODE_ENV !== "test" ? 100 : 10000, // max requests per window
   standardHeaders: true,
   legacyHeaders: false,
 });

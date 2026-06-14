@@ -1,8 +1,5 @@
 import UserService from "../service/user.service.js";
-import {
-  roleMap,
-  CreateUserArgs,
-} from "../graphql/interface/user.interface.graphql.js";
+import { CreateUserArgs } from "../graphql/interface/user.interface.graphql.js";
 import { Context } from "../graphql/interface/interface.graphql.js";
 import User from "../model/user.model.js";
 
@@ -12,9 +9,6 @@ export async function createUser(
   args: CreateUserArgs,
   _: Context,
 ): Promise<User> {
-  const user = await userService.createUser({
-    ...args.input,
-    role: roleMap[args.input.role],
-  });
+  const user = await userService.createUser(args.input);
   return user;
 }

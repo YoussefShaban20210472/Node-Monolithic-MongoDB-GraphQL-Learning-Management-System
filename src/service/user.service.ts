@@ -6,7 +6,6 @@ const saltRounds = 10;
 export default class UserService {
   async createUser(user: User) {
     try {
-      console.log("Service!");
       const _ = userSchema.parse(user);
 
       const hashedPassword = await bcrypt.hash(user.password, saltRounds);

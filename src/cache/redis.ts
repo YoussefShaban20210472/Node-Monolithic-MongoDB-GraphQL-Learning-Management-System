@@ -1,6 +1,5 @@
 import { createClient, RedisClientType } from "redis";
 import config from "../config/index.js";
-
 class RedisClient {
   private client: RedisClientType;
   private isConnected = false;

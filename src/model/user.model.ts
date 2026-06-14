@@ -8,7 +8,7 @@ export default interface User {
   email: string;
   password: string;
   address: string;
-  role: "STUDENT" | "INSTRUCTOR" | "ADMIN";
+  role: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
