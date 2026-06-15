@@ -39,3 +39,11 @@ export async function deleteUserById(_id: string): Promise<boolean> {
   });
   return result.deletedCount > 0;
 }
+export async function getUserById(_id: string): Promise<User | null> {
+  const db = await connect();
+  let collection: Collection<User> = db.collection<User>("users");
+  const result = await collection.findOne({
+    _id: new ObjectId(_id),
+  });
+  return result;
+}

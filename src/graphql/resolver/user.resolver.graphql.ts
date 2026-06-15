@@ -1,6 +1,7 @@
 import {
   createUser,
   deleteUserById,
+  getUserById,
 } from "../../controller/user.controller.js";
 import { withRole } from "../auth/withRole.auth.graphql.js";
 import { errorHandler } from "../error/errorHandler.error.graphql.js";
@@ -27,5 +28,6 @@ export const userResolver = {
   Mutation: {
     createUser: errorHandler(withRole(createUser, ["ADMIN"])),
     deleteUserById: errorHandler(withRole(deleteUserById, ["ADMIN"])),
+    getUserById: errorHandler(withRole(getUserById, ["ADMIN"])),
   },
 };

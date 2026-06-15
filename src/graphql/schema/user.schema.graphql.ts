@@ -1,7 +1,7 @@
 export const userSchema: string = `#graphql
 
     type User {
-        _id: ID!
+        _id: String!
         firstName: String!
         lastName: String!
         phoneNumber: String!
@@ -31,11 +31,12 @@ export const userSchema: string = `#graphql
     }
     type Query {
         users: [User!]!
-        user(_id: ID!): User
+        user(_id: String!): User
     }
 
     type Mutation {
         createUser(input: CreateUserInput!): User!
-        deleteUserById(_id: ID!): Boolean!
+        deleteUserById(_id: String!): Boolean!
+        getUserById(_id: String!): User!
     }
 `;

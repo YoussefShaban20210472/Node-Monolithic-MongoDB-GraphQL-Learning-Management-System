@@ -6,6 +6,7 @@ import {
   updateUserSchema,
   userIdSchema,
 } from "../validator/user.validator.js";
+import { ObjectNotFound } from "../error/business.error.js";
 const saltRounds = 10;
 export default class UserService {
   async createUser(user: User) {
@@ -30,6 +31,17 @@ export default class UserService {
   async deleteUserById(_id: string) {
     userIdSchema.parse({ _id });
     const result = await userRepository.deleteUserById(_id);
+    if (!result) {
+      throw new ObjectNotFound("User");
+    }
+    return result;
+  }
+  async getUserById(_id: string) {
+    userIdSchema.parse({ _id });
+    const result = await userRepository.getUserById(_id);
+    if (result == null) {
+      throw new ObjectNotFound("User");
+    }
     return result;
   }
 }

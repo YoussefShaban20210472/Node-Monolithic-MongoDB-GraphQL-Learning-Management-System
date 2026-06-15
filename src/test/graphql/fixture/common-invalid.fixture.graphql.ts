@@ -21,3 +21,13 @@ export const commonInvalidValues = [
   -50.9785,
   -0.00000097,
 ] as const;
+
+export const invalidAuthenicationSecinaros = [
+  { type: "empty", value: [""] },
+  { type: "invalid", value: ["adsadasdsad", "invalid-session"] },
+] as const;
+
+export const invalidSchemaSecinaros = [
+  { type: "missing", values: [undefined] },
+  { type: "invalid", values: commonInvalidValues },
+] as const;

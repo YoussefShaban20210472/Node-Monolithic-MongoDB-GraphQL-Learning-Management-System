@@ -1,5 +1,3 @@
-import { ObjectId } from "mongodb";
-
 export interface CreateUserInput {
   firstName: string;
   lastName: string;
@@ -21,6 +19,6 @@ export interface UpdateUserInput {
 export interface CreateUserArgs {
   input: CreateUserInput;
 }
-export interface deleteUserByIdArgs {
+export interface UserByIdArgs {
   _id: string;
 }

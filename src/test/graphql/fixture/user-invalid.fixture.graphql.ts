@@ -48,10 +48,10 @@ const invalidAddressValues = [
   "Egypt",
   "Morroco",
   "123, Cairo",
-] as const;
-const invalidRoleValues = ["student", "instructor", "admin"] as const;
+];
+const invalidRoleValues = ["student", "instructor", "admin"];
 
-export const invalidUserFieldsValues = {
+export const specificInvalidUserValues = {
   address: invalidAddressValues,
   role: invalidRoleValues,
   firstName: [],

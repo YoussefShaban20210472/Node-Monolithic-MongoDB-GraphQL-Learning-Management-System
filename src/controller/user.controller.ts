@@ -1,7 +1,7 @@
 import UserService from "../service/user.service.js";
 import {
   CreateUserArgs,
-  deleteUserByIdArgs,
+  UserByIdArgs,
 } from "../graphql/interface/user.interface.graphql.js";
 import { Context } from "../graphql/interface/interface.graphql.js";
 import User from "../model/user.model.js";
@@ -19,10 +19,19 @@ export async function createUser(
 }
 export async function deleteUserById(
   _: unknown,
-  args: deleteUserByIdArgs,
+  args: UserByIdArgs,
   __: Context,
   ___: unknown,
 ): Promise<boolean> {
   const result = await userService.deleteUserById(args._id);
+  return result;
+}
+export async function getUserById(
+  _: unknown,
+  args: UserByIdArgs,
+  __: Context,
+  ___: unknown,
+): Promise<User> {
+  const result = await userService.getUserById(args._id);
   return result;
 }
