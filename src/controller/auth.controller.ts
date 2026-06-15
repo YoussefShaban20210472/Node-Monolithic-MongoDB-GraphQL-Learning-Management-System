@@ -17,8 +17,10 @@ export async function login(
 }
 
 export async function logout(
+  _: unknown,
   args: unknown,
   context: Context,
+  ___: unknown,
 ): Promise<boolean> {
   await new Promise<void>((resolve, reject) => {
     context.req.session.destroy((err) => {

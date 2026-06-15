@@ -5,7 +5,7 @@ export const ONE_DAY = 1000 * 60 * 60 * 24;
 export const SEVEN_DAYS = 7 * ONE_DAY;
 export const ONE_YEAR = 365 * ONE_DAY;
 
-export function getIdZObject(name: string) {
+export function getMongoDbIdZObject(name: string) {
   return z
     .string({
       error: (issue) =>
@@ -13,16 +13,7 @@ export function getIdZObject(name: string) {
           ? `${name} is required`
           : `${name} must be string`,
     })
-    .regex(/^[1-9]\d{0,9}$/, {
-      error: (issue) =>
-        issue.input!.length < 1
-          ? `${name} must be at least 1 digit`
-          : issue.input!.length > 10
-            ? `${name} must be at maximum 10 digits`
-            : issue.input![0] == `0`
-              ? `${name} must be a positive integer`
-              : `${name} must be only digits`,
-    });
+    .regex(/^[0-9a-fA-F]{24}$/, `${name} is invalid id`);
 }
 export function getStringZObject(
   name: string,

@@ -36,5 +36,6 @@ export const userSchema: string = `#graphql
 
     type Mutation {
         createUser(input: CreateUserInput!): User!
+        deleteUserById(_id: ID!): Boolean!
     }
 `;

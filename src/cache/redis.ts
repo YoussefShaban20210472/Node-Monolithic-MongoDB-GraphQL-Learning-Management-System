@@ -1,5 +1,6 @@
 import { createClient, RedisClientType } from "redis";
 import config from "../config/index.js";
+import { RedisError } from "../error/redis.error.js";
 class RedisClient {
   private client: RedisClientType;
   private isConnected = false;
@@ -9,19 +10,38 @@ class RedisClient {
   }
 
   async connect(): Promise<void> {
-    if (this.isConnected) return;
+    try {
+      if (this.isConnected) return;
 
-    await this.client.connect();
+      await this.client.connect();
 
-    this.isConnected = true;
+      this.isConnected = true;
 
-    console.log("Redis connected successfully");
+      console.log("Redis connected successfully");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new RedisError(error.message);
+      } else {
+        throw new RedisError(
+          "Error happens while connecting to caching server",
+        );
+      }
+    }
   }
 
   async get(key: string): Promise<string | null> {
     await this.connect();
-
-    return this.client!.get(key);
+    try {
+      return this.client!.get(key);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new RedisError(error.message);
+      } else {
+        throw new RedisError(
+          "Error happens while getting value from caching server",
+        );
+      }
+    }
   }
 
   async set(
@@ -30,10 +50,19 @@ class RedisClient {
     expiresIn?: number,
   ): Promise<string | null> {
     await this.connect();
-
-    return this.client!.set(key, value, {
-      EX: expiresIn ?? config.redisExpiresIn,
-    });
+    try {
+      return this.client!.set(key, value, {
+        EX: expiresIn ?? config.redisExpiresIn,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new RedisError(error.message);
+      } else {
+        throw new RedisError(
+          "Error happens while setting value to caching server",
+        );
+      }
+    }
   }
   getClient(): RedisClientType {
     return this.client;

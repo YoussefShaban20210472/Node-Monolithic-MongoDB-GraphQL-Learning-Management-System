@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { getStringZObject, getEnumZObject } from "./validator.js";
+import {
+  getStringZObject,
+  getEnumZObject,
+  getMongoDbIdZObject,
+} from "./validator.js";
 function getEmailZObject() {
   return z
     .string({
@@ -66,6 +70,9 @@ export const userSchema = z.object({
   phoneNumber: getPhoneNumberZObject(),
   address: getAddressZObject(),
   role: getEnumZObject("role", ["STUDENT", "INSTRUCTOR", "ADMIN"]),
+});
+export const userIdSchema = z.object({
+  _id: getMongoDbIdZObject("_id"),
 });
 export const updateUserSchema = z.object({
   firstName: getStringZObject("firstName", 3, 20).optional(),
