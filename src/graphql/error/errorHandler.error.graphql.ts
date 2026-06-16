@@ -12,10 +12,8 @@ export function errorHandler<TArgs, TResult>(
 ) {
   return async (_: unknown, args: TArgs, context: Context, __: unknown) => {
     try {
-      console.log("from ErrorHandler");
       return await resolver(_, args, context, __);
     } catch (error: unknown) {
-      console.log(handleAppError(error));
       throw new GraphQLError(handleAppError(error));
     }
   };

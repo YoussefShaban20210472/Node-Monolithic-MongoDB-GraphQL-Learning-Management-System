@@ -24,3 +24,10 @@ export const requiredUserFields = [
   "address",
   "role",
 ] as const;
+export const updateUserFields = [
+  "firstName",
+  "lastName",
+  "phoneNumber",
+  "email",
+  "address",
+] as const;

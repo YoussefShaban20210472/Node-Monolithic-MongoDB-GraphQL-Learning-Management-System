@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { graphqlRequest } from "../../utils/graphql-client.js";
+import { test } from "./common-test.shared.js";
 
 export function testBusniess(
   getInput: (field: string, value: unknown) => unknown,
@@ -21,20 +21,15 @@ export function testBusniess(
       invalidBusniessSecinaros.forEach((secinaro) => {
         secinaro.values.forEach((value) => {
           it(`Should return Bad Request if the ${field} is ${secinaro.type} (${value})`, async () => {
-            const variables = {
-              input: getInput(field, value),
-            };
-            let response = await graphqlRequest()
-              .set("Cookie", getCookie())
-              .send({
-                query: schema,
-                variables,
-              });
-            console.log(response.body);
-            expect(response.status).toBe(200);
-
-            expect(response.body.errors).toBeDefined();
-            expect(response.body.data).toBeNull();
+            await test(
+              getInput(field, value),
+              getCookie(),
+              schema,
+              200,
+              "defined",
+              "null",
+              [],
+            );
           });
         });
       });
@@ -49,17 +44,7 @@ export function testObjectNotFound(
 ) {
   describe("Should return Object Not Found if the object is not found", () => {
     it(`Should return Object Not Found if the object is not found`, async () => {
-      const variables = {
-        input: getInput(),
-      };
-      const response = await graphqlRequest().set("Cookie", getCookie()).send({
-        query: schema,
-        variables,
-      });
-      expect(response.status).toBe(200);
-
-      expect(response.body.errors).toBeDefined();
-      expect(response.body.data).toBeNull();
+      await test(getInput(), getCookie(), schema, 200, "defined", "null", []);
     });
   });
 }

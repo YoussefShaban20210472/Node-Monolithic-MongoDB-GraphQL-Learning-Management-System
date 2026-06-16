@@ -1,6 +1,7 @@
 import UserService from "../service/user.service.js";
 import {
   CreateUserArgs,
+  UpdateUserArgs,
   UserByIdArgs,
 } from "../graphql/interface/user.interface.graphql.js";
 import { Context } from "../graphql/interface/interface.graphql.js";
@@ -33,5 +34,57 @@ export async function getUserById(
   ___: unknown,
 ): Promise<User> {
   const result = await userService.getUserById(args._id);
+  return result;
+}
+export async function getAllUsers(
+  _: unknown,
+  __: unknown,
+  ___: Context,
+  ____: unknown,
+): Promise<User[]> {
+  const result = await userService.getAllUsers();
+  return result;
+}
+
+export async function deleteMe(
+  _: unknown,
+  __: unknown,
+  context: Context,
+  ___: unknown,
+): Promise<boolean> {
+  const result = await userService.deleteUserById(context.req.session.userId!);
+  return result;
+}
+export async function getMe(
+  _: unknown,
+  __: unknown,
+  context: Context,
+  ___: unknown,
+): Promise<User> {
+  const result = await userService.getUserById(context.req.session.userId!);
+  return result;
+}
+
+export async function updateUserById(
+  _: unknown,
+  args: UpdateUserArgs,
+  __: Context,
+  ___: unknown,
+): Promise<Boolean> {
+  const _id = args.input._id!;
+  delete args.input._id;
+  const result = await userService.updateUserById(_id, args.input);
+  return result;
+}
+export async function updateMe(
+  _: unknown,
+  args: UpdateUserArgs,
+  context: Context,
+  __: unknown,
+): Promise<Boolean> {
+  const result = await userService.updateUserById(
+    context.req.session.userId!,
+    args.input,
+  );
   return result;
 }

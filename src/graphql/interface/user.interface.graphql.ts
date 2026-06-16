@@ -9,6 +9,7 @@ export interface CreateUserInput {
 }
 
 export interface UpdateUserInput {
+  _id?: string;
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
@@ -21,4 +22,7 @@ export interface CreateUserArgs {
 }
 export interface UserByIdArgs {
   _id: string;
+}
+export interface UpdateUserArgs {
+  input: UpdateUserInput;
 }

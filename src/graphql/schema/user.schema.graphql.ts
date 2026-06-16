@@ -22,7 +22,15 @@ export const userSchema: string = `#graphql
         role: String!
     }
 
-    input UpdateUserInput {
+    input UpdateUserByIdInput {
+        _id: String!
+        firstName: String
+        lastName: String
+        phoneNumber: String
+        email: String
+        address: String
+    }
+    input UpdateMeInput {
         firstName: String
         lastName: String
         phoneNumber: String
@@ -31,12 +39,15 @@ export const userSchema: string = `#graphql
     }
     type Query {
         users: [User!]!
-        user(_id: String!): User
+        user(_id: String!): User!
+        me: User!
     }
 
     type Mutation {
         createUser(input: CreateUserInput!): User!
         deleteUserById(_id: String!): Boolean!
-        getUserById(_id: String!): User!
+        deleteMe: Boolean!        
+        updateUserById(input: UpdateUserByIdInput!): Boolean!
+        updateMe(input: UpdateMeInput!): Boolean!
     }
 `;

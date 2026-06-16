@@ -1,30 +1,20 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { graphqlRequest } from "../../utils/graphql-client.js";
 import { invalidAuthenicationSecinaros } from "../../graphql/fixture/common-invalid.fixture.graphql.js";
+import { test } from "./common-test.shared.js";
 
-export function testAuthenication(input: () => unknown, schema: string) {
+export function testAuthenication(getInput: () => unknown, schema: string) {
   describe("Authenication Validation (Empty, Invalid)", () => {
     invalidAuthenicationSecinaros.forEach((secinaro) => {
       secinaro.value.forEach((value) => {
         it(`Should return 'require login' if the authenication is (${secinaro.type}) (${secinaro.value})`, async () => {
-          const variables = {
-            input: input(),
-          };
-          let response = await graphqlRequest().set("Cookie", value).send({
-            query: schema,
-            variables,
-          });
-          console.log(response.body);
-          expect(response.status).toBe(200);
-          expect(response.body.errors).toBeDefined();
-          expect(response.body.data).toBeNull();
+          await test(getInput(), value, schema, 200, "defined", "null", []);
         });
       });
     });
   });
 }
 export function testAuthorization(
-  input: () => unknown,
+  getInput: () => unknown,
   schema: string,
   invalidAuthorizationSecinaros: {
     type: string;
@@ -34,20 +24,15 @@ export function testAuthorization(
   describe("Authorization Validation (Unauthorized)", () => {
     invalidAuthorizationSecinaros.forEach((secinaro) => {
       it(`Should return Forbidden if the authorization is rejected (${secinaro.type})`, async () => {
-        const variables = {
-          input: input(),
-        };
-        let response = await graphqlRequest()
-          .set("Cookie", secinaro.getCookie())
-          .send({
-            query: schema,
-            variables,
-          });
-        console.log(response.body);
-        expect(response.status).toBe(200);
-
-        expect(response.body.errors).toBeDefined();
-        expect(response.body.data).toBeNull();
+        await test(
+          getInput(),
+          secinaro.getCookie(),
+          schema,
+          200,
+          "defined",
+          "null",
+          [],
+        );
       });
     });
   });

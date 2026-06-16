@@ -21,7 +21,6 @@ export function withRole<TArgs, TResult>(
     if (!role.includes(userRole!)) {
       throw new Unauthorized();
     }
-    console.log("from WithRole");
     return await resolver(_, args, context, __);
   };
 }

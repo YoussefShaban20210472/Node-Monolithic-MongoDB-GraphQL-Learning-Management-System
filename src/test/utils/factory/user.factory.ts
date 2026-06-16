@@ -14,7 +14,7 @@ export function createRandomUser(role: string = "admin") {
     }),
     phoneNumber: faker.string.numeric({ length: { min: 10, max: 15 } }),
     password: "Password@123",
-    address: "253 N. Cherry St.",
+    address: `${faker.string.numeric(3)} N. Cherry St.`,
     role: role.toLocaleUpperCase(),
   };
 }

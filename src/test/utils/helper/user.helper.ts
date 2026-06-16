@@ -3,6 +3,7 @@ import { LOGIN } from "../../graphql/operation/auth.operation.graphql.js";
 import { createRandomUser } from "../factory/user.factory.js";
 import { CREATE_USER } from "../../graphql/operation/user.operation.graphql.js";
 import { adminLogin } from "../../graphql/fixture/user.fixture.graphql.js";
+
 export async function loginAndGetCookie(account: {
   email?: string;
   password?: string;
@@ -43,5 +44,31 @@ export async function createRandomUserAndGetId(
   adminCookie: string,
 ) {
   const user = createRandomUser(role);
-  return createUserAndGetId(user, adminCookie);
+  return await createUserAndGetId(user, adminCookie);
+}
+
+export async function createUserAndLoginAndGetCookie(
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    address: string;
+    role: string;
+  },
+  adminCookie: string,
+) {
+  await createUserAndGetId(user, adminCookie);
+  return await loginAndGetCookie({
+    email: user.email,
+    password: user.password,
+  });
+}
+export async function createRandomUserAndLoginAndGetCookie(
+  role: string,
+  adminCookie: string,
+) {
+  const user = createRandomUser(role);
+  return await createUserAndLoginAndGetCookie(user, adminCookie);
 }

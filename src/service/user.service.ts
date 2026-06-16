@@ -6,7 +6,7 @@ import {
   updateUserSchema,
   userIdSchema,
 } from "../validator/user.validator.js";
-import { ObjectNotFound } from "../error/business.error.js";
+import { BadRequest, ObjectNotFound } from "../error/business.error.js";
 const saltRounds = 10;
 export default class UserService {
   async createUser(user: User) {
@@ -40,6 +40,25 @@ export default class UserService {
     userIdSchema.parse({ _id });
     const result = await userRepository.getUserById(_id);
     if (result == null) {
+      throw new ObjectNotFound("User");
+    }
+    return result;
+  }
+  async getAllUsers() {
+    const result = await userRepository.getAllUsers();
+    return result;
+  }
+  async updateUserById(_id: string, data: Partial<User>) {
+    userIdSchema.parse({ _id });
+    updateUserSchema.parse(data);
+    if (Object.keys(data).length === 0) {
+      throw new BadRequest(
+        "At least one field must be provided to update user",
+      );
+    }
+
+    const result = await userRepository.updateUserById(_id, data);
+    if (!result) {
       throw new ObjectNotFound("User");
     }
     return result;

@@ -1,36 +1,36 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { graphqlRequest } from "../../utils/graphql-client.js";
-import {
-  commonInvalidValues,
-  invalidAuthenicationSecinaros,
-  invalidSchemaSecinaros,
-} from "../../graphql/fixture/common-invalid.fixture.graphql.js";
+import { invalidSchemaSecinaros } from "../../graphql/fixture/common-invalid.fixture.graphql.js";
+import { test } from "./common-test.shared.js";
 
 export function testSchema(
   getInput: (field: string, value: unknown) => unknown,
   schema: string,
   requiredFields: readonly string[],
   getCookie: () => string,
+  allowMissing: boolean = false,
 ) {
+  let SchemaSecinaros;
+  if (allowMissing) {
+    SchemaSecinaros = [
+      { type: "invalid", values: invalidSchemaSecinaros[1].values.slice(2) },
+    ];
+  } else {
+    SchemaSecinaros = invalidSchemaSecinaros;
+  }
   describe("Schema Validation (Missing, Invalid)", () => {
-    invalidSchemaSecinaros.forEach((secinaro) => {
+    SchemaSecinaros.forEach((secinaro) => {
       secinaro.values.forEach((value) => {
         requiredFields.forEach((field) => {
           it(`Should return Bad Request if the ${field} is ${secinaro.type} (${value})`, async () => {
-            const variables = {
-              input: getInput(field, value),
-            };
-            let response = await graphqlRequest()
-              .set("Cookie", getCookie())
-              .send({
-                query: schema,
-                variables,
-              });
-            console.log(response.body);
-            expect(response.status).toBe(400);
-
-            expect(response.body.errors).toBeDefined();
-            expect(response.body.data).toBeUndefined();
+            await test(
+              getInput(field, value),
+              getCookie(),
+              schema,
+              400,
+              "defined",
+              "undefined",
+              [],
+            );
           });
         });
       });

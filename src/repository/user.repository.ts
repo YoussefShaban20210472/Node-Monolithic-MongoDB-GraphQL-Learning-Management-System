@@ -47,3 +47,22 @@ export async function getUserById(_id: string): Promise<User | null> {
   });
   return result;
 }
+export async function getAllUsers(): Promise<User[]> {
+  const db = await connect();
+  let collection: Collection<User> = db.collection<User>("users");
+  const result = await collection.find();
+  return result.toArray();
+}
+
+export async function updateUserById(
+  _id: string,
+  data: Partial<User>,
+): Promise<Boolean> {
+  const db = await connect();
+  let collection: Collection<User> = db.collection<User>("users");
+  const result = await collection.updateOne(
+    { _id: new ObjectId(_id) },
+    { $set: data },
+  );
+  return result.matchedCount > 0;
+}
