@@ -51,13 +51,28 @@ export default class UserService {
   async updateUserById(_id: string, data: Partial<User>) {
     userIdSchema.parse({ _id });
     updateUserSchema.parse(data);
-    if (Object.keys(data).length === 0) {
+    const updateUserFields = [
+      "firstName",
+      "lastName",
+      "phoneNumber",
+      "email",
+      "address",
+    ] as const;
+
+    const safeData: Partial<User> = {};
+    for (let field of updateUserFields) {
+      if (data[field] != null) {
+        safeData[field] = data[field];
+      }
+    }
+
+    if (Object.keys(safeData).length === 0) {
       throw new BadRequest(
         "At least one field must be provided to update user",
       );
     }
 
-    const result = await userRepository.updateUserById(_id, data);
+    const result = await userRepository.updateUserById(_id, safeData);
     if (!result) {
       throw new ObjectNotFound("User");
     }

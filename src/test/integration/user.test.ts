@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { graphqlRequest } from "../utils/graphql-client.js";
+import { describe, it, expect, beforeAll } from "vitest";
 import {
   createRandomUserAndGetId,
   createRandomUserAndLoginAndGetCookie,
@@ -41,6 +40,10 @@ import {
 } from "./shared/busniess-test.shared.js";
 import { test } from "./shared/common-test.shared.js";
 import { Response } from "supertest";
+import {
+  testUpdateManyFields,
+  testUpdateOneField,
+} from "./shared/update-test.shared.js";
 
 let adminCookie: string;
 let instructorCookie: string;
@@ -58,6 +61,29 @@ beforeAll(async () => {
   studentCookie = await loginAndGetCookie(studentLogin);
   userId = await createRandomUserAndGetId("STUDENT", adminCookie);
 });
+
+async function testDuplicates(
+  getInput: (duplicate: "email" | "phoneNumber") => unknown,
+  schema: string,
+  roles: { type: string; getCookie: () => string }[],
+) {
+  const duplicates: ("email" | "phoneNumber")[] = ["email", "phoneNumber"];
+  roles.forEach((role) => {
+    duplicates.forEach((duplicate) => {
+      it(`Should reject duplicate (${duplicate}) (${role.type})`, async () => {
+        await test(
+          getInput(duplicate),
+          role.getCookie(),
+          schema,
+          200,
+          "defined",
+          "null",
+          [],
+        );
+      });
+    });
+  });
+}
 describe("Testing create user", () => {
   const schema = CREATE_USER;
   describe("Positive", () => {
@@ -92,7 +118,7 @@ describe("Testing create user", () => {
   });
 
   describe("Negative", () => {
-    const getCookie = () => adminCookie;
+    const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
     const user = createRandomUser();
     testAuthenication(() => user, schema);
     testAuthorization(
@@ -107,7 +133,7 @@ describe("Testing create user", () => {
       }),
       schema,
       requiredUserFields,
-      getCookie,
+      rolesLocal,
     );
     testBusniess(
       (field: string, value: unknown) => ({
@@ -116,29 +142,18 @@ describe("Testing create user", () => {
       }),
       schema,
       requiredUserFields,
-      getCookie,
+      rolesLocal,
       commonInvalidUserValues,
       specificInvalidUserValues,
     );
     describe("Should reject duplicate email/phoneNumber", () => {
-      const temp = createRandomUser();
-      const duplicates: (keyof typeof temp)[] = ["email", "phoneNumber"];
       roles.forEach((role) => {
-        duplicates.forEach((duplicate) => {
-          it(`Should reject duplicate (${duplicate}) (${role})`, async () => {
-            const newUser = createRandomUser(role);
-            newUser[duplicate] = adminUser[duplicate] || "";
-            await test(
-              newUser,
-              adminCookie,
-              CREATE_USER,
-              200,
-              "defined",
-              "null",
-              [],
-            );
-          });
+        const newUser = createRandomUser(role);
+        const getInput = (duplicate: "email" | "phoneNumber") => ({
+          ...newUser,
+          [duplicate]: adminUser[duplicate],
         });
+        testDuplicates(getInput, schema, rolesLocal);
       });
     });
   });
@@ -170,24 +185,24 @@ describe("Testing delete user by id", () => {
   });
 
   describe("Negative", () => {
-    const getCookie = () => adminCookie;
+    const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
     testAuthenication(() => userId, schema);
     testAuthorization(() => userId, schema, invalidAuthorizationSecinaros);
     testSchema(
       (field: string, value: unknown) => value,
       schema,
       ["_id"],
-      getCookie,
+      rolesLocal,
     );
     testBusniess(
       (field: string, value: unknown) => value,
       schema,
       ["_id"],
-      getCookie,
+      rolesLocal,
       commonInvalidUserValues,
       { _id: [] },
     );
-    testObjectNotFound(() => `QQ${userId.slice(2)}`, schema, getCookie);
+    testObjectNotFound(() => `QQ${userId.slice(2)}`, schema, rolesLocal);
   });
 });
 
@@ -226,24 +241,24 @@ describe("Testing get user by id", () => {
   });
 
   describe("Negative", () => {
-    const getCookie = () => adminCookie;
+    const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
     testAuthenication(() => userId, schema);
     testAuthorization(() => userId, schema, invalidAuthorizationSecinaros);
     testSchema(
       (field: string, value: unknown) => value,
       schema,
       ["_id"],
-      getCookie,
+      rolesLocal,
     );
     testBusniess(
       (field: string, value: unknown) => value,
       schema,
       ["_id"],
-      getCookie,
+      rolesLocal,
       commonInvalidUserValues,
       { _id: [] },
     );
-    testObjectNotFound(() => `QQ${userId.slice(2)}`, schema, getCookie);
+    testObjectNotFound(() => `QQ${userId.slice(2)}`, schema, rolesLocal);
   });
 });
 describe("Testing get all users", () => {
@@ -354,6 +369,105 @@ describe("Testing get user by id", () => {
   });
 });
 
+describe("Testing update me", () => {
+  const schema = UPDATE_ME;
+  let adminCookieLocal: string,
+    instructorCookieLocal: string,
+    studentCookieLocal: string;
+  beforeAll(async () => {
+    adminCookieLocal = await createRandomUserAndLoginAndGetCookie(
+      "ADMIN",
+      adminCookie,
+    );
+    instructorCookieLocal = await createRandomUserAndLoginAndGetCookie(
+      "INSTRUCTOR",
+      adminCookie,
+    );
+    studentCookieLocal = await createRandomUserAndLoginAndGetCookie(
+      "STUDENT",
+      adminCookie,
+    );
+  });
+  const rolesLocal = [
+    {
+      type: "ADMIN",
+      getCookie: () => adminCookieLocal,
+    },
+    {
+      type: "INSTRUCTOR",
+      getCookie: () => instructorCookieLocal,
+    },
+    {
+      type: "STUDENT",
+      getCookie: () => studentCookieLocal,
+    },
+  ];
+  describe("Positive", () => {
+    const getInput = () => {
+      const newUser = createRandomUser();
+      return {
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        phoneNumber: newUser.phoneNumber,
+        email: newUser.email,
+        address: newUser.address,
+      };
+    };
+    const getInputOneField = (field: (typeof updateUserFields)[number]) => {
+      const newUser = createRandomUser();
+      return {
+        [field]: newUser[field],
+      };
+    };
+
+    testUpdateManyFields(getInput, schema, "updateMe", rolesLocal);
+    testUpdateOneField(
+      getInputOneField,
+      schema,
+      "updateMe",
+      rolesLocal,
+      updateUserFields,
+    );
+  });
+  describe("Negative", () => {
+    const user = createRandomUser();
+    const input = () => ({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      email: user.email,
+      address: user.address,
+    });
+    testAuthenication(input, schema);
+    testSchema(
+      (field: string, value: unknown) => ({
+        ...input(),
+        [field]: value,
+      }),
+      schema,
+      updateUserFields,
+      rolesLocal,
+      true,
+    );
+    testBusniess(
+      (field: string, value: unknown) => ({
+        ...input(),
+        [field]: value,
+      }),
+      schema,
+      updateUserFields,
+      rolesLocal,
+      commonInvalidUserValues,
+      specificInvalidUserValues,
+    );
+    describe("Should reject duplicate email/phoneNumber", () => {
+      const getInput = (duplicate: "email" | "phoneNumber") => ({
+        [duplicate]: adminUser[duplicate],
+      });
+      testDuplicates(getInput, schema, rolesLocal);
+    });
+  });
+});
 describe("Testing update user by id", () => {
   const schema = UPDATE_USER_BY_ID;
   describe("Positive", () => {
@@ -377,6 +491,11 @@ describe("Testing update user by id", () => {
         getId: () => studentId,
       },
     ];
+    const additionalTests = [
+      (response: Response) => {
+        expect(response.body.data.updateUserById).toBe(true);
+      },
+    ];
     describe("Update many fields", () => {
       roles.forEach((role) => {
         it(`Should an admin update all ${role.type} user fields`, async () => {
@@ -389,11 +508,7 @@ describe("Testing update user by id", () => {
             email: newUser.email,
             address: newUser.address,
           };
-          const additionalTests = [
-            (response: Response) => {
-              expect(response.body.data.updateUserById).toBe(true);
-            },
-          ];
+
           await test(
             input,
             adminCookie,
@@ -416,12 +531,6 @@ describe("Testing update user by id", () => {
               _id: role.getId(),
               [field]: newUser[field],
             };
-            console.log(input._id);
-            const additionalTests = [
-              (response: Response) => {
-                expect(response.body.data.updateUserById).toBe(true);
-              },
-            ];
             await test(
               input,
               adminCookie,
@@ -437,7 +546,7 @@ describe("Testing update user by id", () => {
     });
   });
   describe("Negative", () => {
-    const getCookie = () => adminCookie;
+    const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
     const requiredFields = [...updateUserFields, "_id"];
     const specificInvalidValues = { ...specificInvalidUserValues, _id: [] };
     const user = createRandomUser();
@@ -458,7 +567,7 @@ describe("Testing update user by id", () => {
       }),
       schema,
       requiredFields,
-      getCookie,
+      rolesLocal,
       true,
     );
     testBusniess(
@@ -468,168 +577,16 @@ describe("Testing update user by id", () => {
       }),
       schema,
       requiredFields,
-      getCookie,
+      rolesLocal,
       commonInvalidUserValues,
       specificInvalidValues,
     );
     describe("Should reject duplicate email/phoneNumber", () => {
-      const temp = createRandomUser();
-      const duplicates: (keyof typeof temp)[] = ["email", "phoneNumber"];
-      duplicates.forEach((duplicate) => {
-        it(`Should reject duplicate (${duplicate})`, async () => {
-          await test(
-            { _id: userId, [duplicate]: adminUser[duplicate] },
-            adminCookie,
-            schema,
-            200,
-            "defined",
-            "null",
-            [],
-          );
-        });
+      const getInput = (duplicate: "email" | "phoneNumber") => ({
+        _id: userId,
+        [duplicate]: adminUser[duplicate],
       });
-    });
-  });
-});
-
-describe("Testing update me", () => {
-  const schema = UPDATE_ME;
-  let adminCookieLocal: string,
-    instructorCookieLocal: string,
-    studentCookieLocal: string;
-  beforeAll(async () => {
-    adminCookieLocal = await createRandomUserAndLoginAndGetCookie(
-      "ADMIN",
-      adminCookie,
-    );
-    instructorCookieLocal = await createRandomUserAndLoginAndGetCookie(
-      "INSTRUCTOR",
-      adminCookie,
-    );
-    studentCookieLocal = await createRandomUserAndLoginAndGetCookie(
-      "STUDENT",
-      adminCookie,
-    );
-  });
-  const roles = [
-    {
-      type: "ADMIN",
-      getCookie: () => adminCookieLocal,
-    },
-    {
-      type: "INSTRUCTOR",
-      getCookie: () => instructorCookieLocal,
-    },
-    {
-      type: "STUDENT",
-      getCookie: () => studentCookieLocal,
-    },
-  ];
-  describe("Positive", () => {
-    describe("Update many fields", () => {
-      roles.forEach((role) => {
-        it(`Should ${role.type} updates himself with all fields`, async () => {
-          const newUser = createRandomUser();
-          const input = {
-            firstName: newUser.firstName,
-            lastName: newUser.lastName,
-            phoneNumber: newUser.phoneNumber,
-            email: newUser.email,
-            address: newUser.address,
-          };
-          const additionalTests = [
-            (response: Response) => {
-              expect(response.body.data.updateMe).toBe(true);
-            },
-          ];
-          await test(
-            input,
-            role.getCookie(),
-            schema,
-            200,
-            "undefined",
-            "defined",
-            additionalTests,
-          );
-        });
-      });
-    });
-
-    describe("Update one field", () => {
-      roles.forEach((role) => {
-        const newUser = createRandomUser();
-        updateUserFields.forEach((field) => {
-          it(`Should ${role.type} updates himself with only field`, async () => {
-            const input = {
-              [field]: newUser[field],
-            };
-            const additionalTests = [
-              (response: Response) => {
-                expect(response.body.data.updateMe).toBe(true);
-              },
-            ];
-            await test(
-              input,
-              role.getCookie(),
-              schema,
-              200,
-              "undefined",
-              "defined",
-              additionalTests,
-            );
-          });
-        });
-      });
-    });
-  });
-  describe("Negative", () => {
-    const getCookie = () => studentCookieLocal;
-    const user = createRandomUser();
-    const input = () => ({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phoneNumber: user.phoneNumber,
-      email: user.email,
-      address: user.address,
-    });
-    testAuthenication(input, schema);
-    testSchema(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
-      schema,
-      updateUserFields,
-      getCookie,
-      true,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
-      schema,
-      updateUserFields,
-      getCookie,
-      commonInvalidUserValues,
-      specificInvalidUserValues,
-    );
-    describe("Should reject duplicate email/phoneNumber", () => {
-      const temp = createRandomUser();
-      const duplicates: (keyof typeof temp)[] = ["email", "phoneNumber"];
-      duplicates.forEach((duplicate) => {
-        it(`Should reject duplicate (${duplicate})`, async () => {
-          await test(
-            { [duplicate]: adminUser[duplicate] },
-            instructorCookieLocal,
-            schema,
-            200,
-            "defined",
-            "null",
-            [],
-          );
-        });
-      });
+      testDuplicates(getInput, schema, rolesLocal);
     });
   });
 });

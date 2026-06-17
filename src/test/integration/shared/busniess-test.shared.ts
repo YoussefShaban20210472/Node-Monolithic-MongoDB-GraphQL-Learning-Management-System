@@ -5,31 +5,33 @@ export function testBusniess(
   getInput: (field: string, value: unknown) => unknown,
   schema: string,
   requiredFields: readonly string[],
-  getCookie: () => string,
+  roles: { type: string; getCookie: () => string }[],
   commonInvalidValues: readonly unknown[],
   specificInvalidValues: Record<string, unknown[]>,
 ) {
   describe("Business Validation (Empty, Invalid)", () => {
-    requiredFields.forEach((field) => {
-      const invalidBusniessSecinaros = [
-        { type: "empty", values: [""] },
-        {
-          type: "invalid",
-          values: [...commonInvalidValues, ...specificInvalidValues[field]],
-        },
-      ];
-      invalidBusniessSecinaros.forEach((secinaro) => {
-        secinaro.values.forEach((value) => {
-          it(`Should return Bad Request if the ${field} is ${secinaro.type} (${value})`, async () => {
-            await test(
-              getInput(field, value),
-              getCookie(),
-              schema,
-              200,
-              "defined",
-              "null",
-              [],
-            );
+    roles.forEach((role) => {
+      requiredFields.forEach((field) => {
+        const invalidBusniessSecinaros = [
+          { type: "empty", values: [""] },
+          {
+            type: "invalid",
+            values: [...commonInvalidValues, ...specificInvalidValues[field]],
+          },
+        ];
+        invalidBusniessSecinaros.forEach((secinaro) => {
+          secinaro.values.forEach((value) => {
+            it(`Should return Bad Request if the ${field} is ${secinaro.type} (${value}) (${role.type})`, async () => {
+              await test(
+                getInput(field, value),
+                role.getCookie(),
+                schema,
+                200,
+                "defined",
+                "null",
+                [],
+              );
+            });
           });
         });
       });
@@ -40,11 +42,21 @@ export function testBusniess(
 export function testObjectNotFound(
   getInput: () => unknown,
   schema: string,
-  getCookie: () => string,
+  roles: { type: string; getCookie: () => string }[],
 ) {
   describe("Should return Object Not Found if the object is not found", () => {
-    it(`Should return Object Not Found if the object is not found`, async () => {
-      await test(getInput(), getCookie(), schema, 200, "defined", "null", []);
+    roles.forEach((role) => {
+      it(`Should return Object Not Found if the object is not found (${role.type})`, async () => {
+        await test(
+          getInput(),
+          role.getCookie(),
+          schema,
+          200,
+          "defined",
+          "null",
+          [],
+        );
+      });
     });
   });
 }

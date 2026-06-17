@@ -6,7 +6,7 @@ export function testSchema(
   getInput: (field: string, value: unknown) => unknown,
   schema: string,
   requiredFields: readonly string[],
-  getCookie: () => string,
+  roles: { type: string; getCookie: () => string }[],
   allowMissing: boolean = false,
 ) {
   let SchemaSecinaros;
@@ -18,19 +18,21 @@ export function testSchema(
     SchemaSecinaros = invalidSchemaSecinaros;
   }
   describe("Schema Validation (Missing, Invalid)", () => {
-    SchemaSecinaros.forEach((secinaro) => {
-      secinaro.values.forEach((value) => {
-        requiredFields.forEach((field) => {
-          it(`Should return Bad Request if the ${field} is ${secinaro.type} (${value})`, async () => {
-            await test(
-              getInput(field, value),
-              getCookie(),
-              schema,
-              400,
-              "defined",
-              "undefined",
-              [],
-            );
+    roles.forEach((role) => {
+      SchemaSecinaros.forEach((secinaro) => {
+        secinaro.values.forEach((value) => {
+          requiredFields.forEach((field) => {
+            it(`Should return Bad Request if the ${field} is ${secinaro.type} (${value}) (${role.type})`, async () => {
+              await test(
+                getInput(field, value),
+                role.getCookie(),
+                schema,
+                400,
+                "defined",
+                "undefined",
+                [],
+              );
+            });
           });
         });
       });
