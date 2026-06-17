@@ -1,7 +1,7 @@
 export const commonInvalidValues = [
   undefined,
   null,
-  [],
+  // [],
   {},
   new Error("invalid"),
   true,

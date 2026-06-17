@@ -4,7 +4,10 @@ export const HALF_HOUR = 1000 * 60 * 30;
 export const ONE_DAY = 1000 * 60 * 60 * 24;
 export const SEVEN_DAYS = 7 * ONE_DAY;
 export const ONE_YEAR = 365 * ONE_DAY;
-
+type HasDates = {
+  startDate?: string;
+  endDate?: string;
+};
 export function getMongoDbIdZObject(name: string) {
   return z
     .string({
@@ -109,46 +112,51 @@ export function checkTimeNow(time: string) {
   const now = new Date();
   return date >= now;
 }
-// function checkDuration(data, ctx, type) {
-//   const start = new Date(data.start_date).getTime();
-//   const end = new Date(data.end_date).getTime();
+export function checkDuration<T extends HasDates>(
+  data: T,
+  ctx: z.RefinementCtx,
+  type: string,
+) {
+  const start = new Date(data.startDate!).getTime();
+  const end = new Date(data.endDate!).getTime();
 
-//   // ✅ validate both dates first
-//   if (isNaN(start) || isNaN(end)) {
-//     return;
-//   }
-//   const diff = end - start;
+  // ✅ validate both dates first
+  if (isNaN(start) || isNaN(end)) {
+    return;
+  }
+  const diff = end - start;
 
-//   if (type === "minutes" && diff < HALF_HOUR) {
-//     ctx.addIssue({
-//       code: "custom",
-//       path: ["end_date"],
-//       message: "end_date must be at least 30 minutes after start_date",
-//     });
-//   }
-//   if (type === "days" && diff < SEVEN_DAYS) {
-//     ctx.addIssue({
-//       code: "custom",
-//       path: ["end_date"],
-//       message: "end_date must be at least 7 days after start_date",
-//     });
-//   }
+  if (type === "minutes" && diff < HALF_HOUR) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["endDate"],
+      message: "endDate must be at least 30 minutes after startDate",
+    });
+  }
+  if (type === "days" && diff < SEVEN_DAYS) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["endDate"],
+      message: "endDate must be at least 7 days after startDate",
+    });
+  }
 
-//   if (diff > ONE_YEAR) {
-//     ctx.addIssue({
-//       code: "custom",
-//       path: ["end_date"],
-//       message: "end_date must be at most 1 year after start_date",
-//     });
-//   }
-// }
-// function checkTimeBetweenNowAndYear(time) {
-//   const date = new Date(time);
-//   const now = new Date();
-//   const oneYearFromNow = new Date(now.getTime() + ONE_YEAR);
+  if (diff > ONE_YEAR) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["endDate"],
+      message: "endDate must be at most 1 year after startDate",
+    });
+  }
+}
 
-//   return date >= now && date <= oneYearFromNow;
-// }
+export function checkTimeBetweenNowAndYear(time: string) {
+  const date = new Date(time);
+  const now = new Date();
+  const oneYearFromNow = new Date(now.getTime() + ONE_YEAR);
+
+  return date >= now && date <= oneYearFromNow;
+}
 // function assertValidTimeAndDuration(course, object, objectName) {
 //   const course_start_date = new Date(course.start_date);
 //   const course_end_date = new Date(course.end_date);
@@ -166,3 +174,7 @@ export function checkTimeNow(time: string) {
 //     throw new BadRequest(message);
 //   }
 // }
+
+export const idSchema = z.object({
+  _id: getMongoDbIdZObject("_id"),
+});

@@ -1,16 +1,13 @@
 import bcrypt from "bcrypt";
 import User from "../model/user.model.js";
 import * as userRepository from "../repository/user.repository.js";
-import {
-  userSchema,
-  updateUserSchema,
-  userIdSchema,
-} from "../validator/user.validator.js";
+import { userSchema, updateUserSchema } from "../validator/user.validator.js";
 import { BadRequest, ObjectNotFound } from "../error/business.error.js";
+import { idSchema } from "../validator/validator.js";
 const saltRounds = 10;
 export default class UserService {
   async createUser(user: User) {
-    const _ = userSchema.parse(user);
+    userSchema.parse(user);
 
     const hashedPassword = await bcrypt.hash(user.password, saltRounds);
     user.password = hashedPassword;
@@ -29,7 +26,7 @@ export default class UserService {
     return createdUser;
   }
   async deleteUserById(_id: string) {
-    userIdSchema.parse({ _id });
+    idSchema.parse({ _id });
     const result = await userRepository.deleteUserById(_id);
     if (!result) {
       throw new ObjectNotFound("User");
@@ -37,7 +34,7 @@ export default class UserService {
     return result;
   }
   async getUserById(_id: string) {
-    userIdSchema.parse({ _id });
+    idSchema.parse({ _id });
     const result = await userRepository.getUserById(_id);
     if (result == null) {
       throw new ObjectNotFound("User");
@@ -49,7 +46,7 @@ export default class UserService {
     return result;
   }
   async updateUserById(_id: string, data: Partial<User>) {
-    userIdSchema.parse({ _id });
+    idSchema.parse({ _id });
     updateUserSchema.parse(data);
     const updateUserFields = [
       "firstName",

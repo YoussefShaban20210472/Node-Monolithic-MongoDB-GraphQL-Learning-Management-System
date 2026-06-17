@@ -1,7 +1,10 @@
 import { graphqlRequest } from "../graphql-client.js";
 import { LOGIN } from "../../graphql/operation/auth.operation.graphql.js";
 import { createRandomUser } from "../factory/user.factory.js";
-import { CREATE_USER } from "../../graphql/operation/user.operation.graphql.js";
+import {
+  CREATE_USER,
+  GET_ME,
+} from "../../graphql/operation/user.operation.graphql.js";
 import { adminLogin } from "../../graphql/fixture/user.fixture.graphql.js";
 
 export async function loginAndGetCookie(account: {
@@ -71,4 +74,16 @@ export async function createRandomUserAndLoginAndGetCookie(
 ) {
   const user = createRandomUser(role);
   return await createUserAndLoginAndGetCookie(user, adminCookie);
+}
+
+export async function getUserId(userCookie: string) {
+  const response = await graphqlRequest()
+    .set("Cookie", userCookie)
+    .send({
+      query: GET_ME,
+      variables: {
+        input: undefined,
+      },
+    });
+  return response.body.data.me._id;
 }

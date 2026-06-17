@@ -71,9 +71,6 @@ export const userSchema = z.object({
   address: getAddressZObject(),
   role: getEnumZObject("role", ["STUDENT", "INSTRUCTOR", "ADMIN"]),
 });
-export const userIdSchema = z.object({
-  _id: getMongoDbIdZObject("_id"),
-});
 export const updateUserSchema = z.object({
   firstName: getStringZObject("firstName", 3, 20).optional(),
   lastName: getStringZObject("lastName", 3, 20).optional(),
