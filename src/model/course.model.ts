@@ -6,8 +6,8 @@ export interface Course {
   description: string;
   shortDescription: string;
   instructorId: ObjectId | string;
-  startDate: string | Date;
-  endDate: string | Date;
+  startDate: Date;
+  endDate: Date;
   tagIds?: (ObjectId | string)[];
   categoryIds?: (ObjectId | string)[];
   createdAt?: Date;

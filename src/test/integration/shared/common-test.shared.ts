@@ -21,6 +21,7 @@ export async function test(
   const errors = response.body.errors;
   const data = response.body.data;
   const status = response.status;
+  console.log(response.body);
   expect(status).toBe(statusCode);
   switch (errorsCase) {
     case "defined":

@@ -16,18 +16,18 @@ export const studentLogin = {
 };
 
 export const requiredUserFields = [
-  "firstName",
-  "lastName",
-  "phoneNumber",
-  "email",
-  "password",
-  "address",
-  "role",
+  { name: "firstName" },
+  { name: "lastName" },
+  { name: "phoneNumber" },
+  { name: "email" },
+  { name: "password" },
+  { name: "address" },
+  { name: "role" },
 ] as const;
 export const updateUserFields = [
-  "firstName",
-  "lastName",
-  "phoneNumber",
-  "email",
-  "address",
+  { name: "firstName" },
+  { name: "lastName" },
+  { name: "phoneNumber" },
+  { name: "email" },
+  { name: "address" },
 ] as const;

@@ -54,7 +54,8 @@ const invalidAuthorizationSecinaros = [
   { type: "instructor", getCookie: () => instructorCookie },
   { type: "student", getCookie: () => studentCookie },
 ];
-
+const idField = [{ name: "_id" }] as const;
+const idSpecificInvalidField = { _id: [] };
 beforeAll(async () => {
   adminCookie = await loginAndGetCookie(adminLogin);
   instructorCookie = await loginAndGetCookie(instructorLogin);
@@ -186,21 +187,22 @@ describe("Testing delete user by id", () => {
 
   describe("Negative", () => {
     const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
+
     testAuthenication(() => userId, schema);
     testAuthorization(() => userId, schema, invalidAuthorizationSecinaros);
     testSchema(
       (field: string, value: unknown) => value,
       schema,
-      ["_id"],
+      idField,
       rolesLocal,
     );
     testBusniess(
       (field: string, value: unknown) => value,
       schema,
-      ["_id"],
+      idField,
       rolesLocal,
       commonInvalidUserValues,
-      { _id: [] },
+      idSpecificInvalidField,
     );
     testObjectNotFound(() => `QQ${userId.slice(2)}`, schema, rolesLocal);
   });
@@ -247,16 +249,16 @@ describe("Testing get user by id", () => {
     testSchema(
       (field: string, value: unknown) => value,
       schema,
-      ["_id"],
+      idField,
       rolesLocal,
     );
     testBusniess(
       (field: string, value: unknown) => value,
       schema,
-      ["_id"],
+      idField,
       rolesLocal,
       commonInvalidUserValues,
-      { _id: [] },
+      idSpecificInvalidField,
     );
     testObjectNotFound(() => `QQ${userId.slice(2)}`, schema, rolesLocal);
   });
@@ -416,7 +418,7 @@ describe("Testing update me", () => {
     const getInputOneField = (field: (typeof updateUserFields)[number]) => {
       const newUser = createRandomUser();
       return {
-        [field]: newUser[field],
+        [field.name]: newUser[field.name],
       };
     };
 
@@ -526,10 +528,10 @@ describe("Testing update user by id", () => {
       roles.forEach((role) => {
         const newUser = createRandomUser();
         updateUserFields.forEach((field) => {
-          it(`Should an admin update only one ${role.type} user field (${field})`, async () => {
+          it(`Should an admin update only one ${role.type} user field (${field.name})`, async () => {
             const input = {
               _id: role.getId(),
-              [field]: newUser[field],
+              [field.name]: newUser[field.name],
             };
             await test(
               input,
@@ -547,7 +549,7 @@ describe("Testing update user by id", () => {
   });
   describe("Negative", () => {
     const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
-    const requiredFields = [...updateUserFields, "_id"];
+    const requiredFields = [...updateUserFields, { name: "_id" }];
     const specificInvalidValues = { ...specificInvalidUserValues, _id: [] };
     const user = createRandomUser();
     const input = () => ({

@@ -4,7 +4,7 @@ import { test } from "./common-test.shared.js";
 export function testBusniess(
   getInput: (field: string, value: unknown) => unknown,
   schema: string,
-  requiredFields: readonly string[],
+  requiredFields: readonly { name: string; type?: unknown }[],
   roles: { type: string; getCookie: () => string }[],
   commonInvalidValues: readonly unknown[],
   specificInvalidValues: Record<string, unknown[]>,
@@ -16,14 +16,17 @@ export function testBusniess(
           { type: "empty", values: [""] },
           {
             type: "invalid",
-            values: [...commonInvalidValues, ...specificInvalidValues[field]],
+            values: [
+              ...commonInvalidValues,
+              ...specificInvalidValues[field.name],
+            ],
           },
         ];
         invalidBusniessSecinaros.forEach((secinaro) => {
           secinaro.values.forEach((value) => {
-            it(`Should return Bad Request if the ${field} is ${secinaro.type} (${value}) (${role.type})`, async () => {
+            it(`Should return Bad Request if the ${field.name} is ${secinaro.type} (${value}) (${role.type})`, async () => {
               await test(
-                getInput(field, value),
+                getInput(field.name, value),
                 role.getCookie(),
                 schema,
                 200,

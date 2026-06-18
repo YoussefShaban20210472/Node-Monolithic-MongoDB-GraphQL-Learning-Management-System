@@ -1,6 +1,4 @@
 export const commonInvalidValues = [
-  undefined,
-  null,
   // [],
   {},
   new Error("invalid"),
@@ -28,6 +26,8 @@ export const invalidAuthenicationSecinaros = [
 ] as const;
 
 export const invalidSchemaSecinaros = [
-  { type: "missing", values: [undefined] },
+  { type: "missing", values: [undefined, null] },
   { type: "invalid", values: commonInvalidValues },
 ] as const;
+
+export const missingValues = [undefined, null];

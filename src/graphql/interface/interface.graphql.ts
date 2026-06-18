@@ -10,3 +10,7 @@ export type Context = {
   };
   res: Response;
 };
+
+export interface IdArgs {
+  _id: string;
+}

@@ -5,7 +5,7 @@ export interface CourseGraphql {
   title: string;
   description: string;
   shortDescription: string;
-  instructorId: string;
+  instructorId: ObjectId | string;
   startDate: string;
   endDate: string;
   tags: string[];
@@ -31,9 +31,22 @@ export interface CreateCourseByAdminInput {
   categories: string[];
 }
 
+export interface UpdateCourseByIdInput {
+  _id: string;
+  title?: string;
+  description?: string;
+  shortDescription?: string;
+  startDate?: string;
+  endDate?: string;
+  tags?: string[];
+  categories?: string[];
+}
 export interface CreateCourseByInstructorArgs {
   input: CreateCourseByInstructorInput;
 }
 export interface CreateCourseByAdminArgs {
   input: CreateCourseByAdminInput;
+}
+export interface UpdateCourseByIdArgs {
+  input: UpdateCourseByIdInput;
 }

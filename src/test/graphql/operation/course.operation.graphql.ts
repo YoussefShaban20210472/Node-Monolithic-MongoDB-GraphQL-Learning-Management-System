@@ -28,3 +28,44 @@ export const CREATE_COURSE_BY_ADMIN = `
         }
       }
     `;
+export const DELETE_COURSE_BY_ID = `
+      mutation DeleteCourseById($input: String!) {
+        deleteCourseById(_id: $input)
+      }
+    `;
+export const GET_COURSE_BY_ID = `
+      query GetCourseById($input: String!) {
+        course(_id: $input){
+        _id
+        title
+        description
+        shortDescription
+        instructorId
+        startDate
+        endDate
+        tags
+        categories
+        }
+      }
+    `;
+export const GET_ALL_COURSES = `
+      query GetAllCourses {
+        courses{
+        _id
+        title
+        description
+        shortDescription
+        instructorId
+        startDate
+        endDate
+        tags
+        categories
+        }
+      }
+    `;
+
+export const UPDATE_COURSE_BY_ID = `
+      mutation UpdateCourseById($input: UpdateCourseByIdInput!) {
+        updateCourseById(input: $input)
+      }
+    `;

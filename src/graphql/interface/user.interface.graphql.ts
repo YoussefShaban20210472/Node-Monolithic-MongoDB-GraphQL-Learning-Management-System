@@ -20,9 +20,6 @@ export interface UpdateUserInput {
 export interface CreateUserArgs {
   input: CreateUserInput;
 }
-export interface UserByIdArgs {
-  _id: string;
-}
 export interface UpdateUserArgs {
   input: UpdateUserInput;
 }

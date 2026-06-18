@@ -1,9 +1,9 @@
 export const requiredCourseFields = [
-  "title",
-  "description",
-  "shortDescription",
-  "startDate",
-  "endDate",
-  "tags",
-  "categories",
+  { name: "title" },
+  { name: "description" },
+  { name: "shortDescription" },
+  { name: "startDate" },
+  { name: "endDate" },
+  { name: "tags", type: "StringArray" },
+  { name: "categories", type: "StringArray" },
 ] as const;
