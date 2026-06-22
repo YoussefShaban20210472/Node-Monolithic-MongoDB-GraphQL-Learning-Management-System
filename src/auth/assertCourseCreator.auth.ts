@@ -1,10 +1,11 @@
 import { Unauthorized } from "../error/business.error.js";
 import { UpdateCourseByIdArgs } from "../graphql/interface/course.interface.graphql.js";
+import { UpdateEnrollmentArgs } from "../graphql/interface/enrollment.interface.graphql.js";
 import { Context, IdArgs } from "../graphql/interface/interface.graphql.js";
 import { isInstructorIsCourseCreator } from "../service/course.service.js";
 
 export async function assertCourseCreator(
-  args: IdArgs | UpdateCourseByIdArgs,
+  args: IdArgs | UpdateCourseByIdArgs | UpdateEnrollmentArgs,
   context: Context,
 ) {
   const role = context.req.session.role;
@@ -13,8 +14,10 @@ export async function assertCourseCreator(
   let _id: string;
   if ("_id" in args) {
     _id = args._id;
-  } else {
+  } else if ("_id" in args.input) {
     _id = args.input._id;
+  } else {
+    _id = args.input.courseId;
   }
   const isCreator = await isInstructorIsCourseCreator(instructorId, _id);
   if (!isCreator) {

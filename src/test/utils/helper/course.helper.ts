@@ -9,19 +9,6 @@ import { adminLogin } from "../../graphql/fixture/user.fixture.graphql.js";
 import { CREATE_COURSE_BY_INSTRUCTOR } from "../../graphql/operation/course.operation.graphql.js";
 import { createRandomCourse } from "../factory/course.factory.js";
 
-export async function loginAndGetCookie(account: {
-  email?: string;
-  password?: string;
-}) {
-  const response = await graphqlRequest().send({
-    query: LOGIN,
-    variables: {
-      input: account,
-    },
-  });
-  return response.headers["set-cookie"];
-}
-
 export async function createCourseAndGetId(
   course: unknown,
   instructorCookie: string,

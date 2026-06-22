@@ -470,6 +470,7 @@ describe("Testing update me", () => {
     });
   });
 });
+
 describe("Testing update user by id", () => {
   const schema = UPDATE_USER_BY_ID;
   describe("Positive", () => {

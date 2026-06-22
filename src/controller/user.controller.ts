@@ -1,12 +1,10 @@
-import UserService from "../service/user.service.js";
+import * as userService from "../service/user.service.js";
 import {
   CreateUserArgs,
   UpdateUserArgs,
 } from "../graphql/interface/user.interface.graphql.js";
 import { Context, IdArgs } from "../graphql/interface/interface.graphql.js";
 import User from "../model/user.model.js";
-
-const userService = new UserService();
 
 export async function createUser(
   _: unknown,
