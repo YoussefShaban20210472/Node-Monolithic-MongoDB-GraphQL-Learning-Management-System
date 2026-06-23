@@ -21,7 +21,7 @@ export async function deleteUserById(
   __: Context,
   ___: unknown,
 ): Promise<boolean> {
-  const result = await userService.deleteUserById(args._id);
+  const result = await userService.deleteUserById(args.input._id);
   return result;
 }
 export async function getUserById(
@@ -30,7 +30,7 @@ export async function getUserById(
   __: Context,
   ___: unknown,
 ): Promise<User> {
-  const result = await userService.getUserById(args._id);
+  const result = await userService.getUserById(args.input._id);
   return result;
 }
 export async function getAllUsers(

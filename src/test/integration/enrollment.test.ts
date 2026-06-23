@@ -16,16 +16,7 @@ import {
   updateUserFields,
 } from "../graphql/fixture/user.fixture.graphql.js";
 
-import {
-  testAuthenication,
-  testAuthorization,
-} from "./shared/auth-test.shared.js";
-import { testSchema } from "./shared/schema-test.shared.js";
-import {
-  testBusniess,
-  testObjectNotFound,
-} from "./shared/busniess-test.shared.js";
-import { test } from "./shared/common-test.shared.js";
+import { test, testCommon } from "./shared/common-test.shared.js";
 import { Response } from "supertest";
 
 import { createRandomCourse } from "../utils/factory/course.factory.js";
@@ -71,54 +62,6 @@ beforeAll(async () => {
   );
   courseId = await createCourseAndGetId(course, instructorCookie);
 });
-
-function testCommon(
-  schema: string,
-  getInput: () => object,
-  invalidAuthorizationSecinaros: {
-    type: string;
-    getCookie: () => string;
-  }[],
-  requiredFields: { name: string }[],
-  roles: {
-    type: string;
-    getCookie: () => string;
-  }[],
-  objectsNotFound: string[],
-) {
-  testAuthenication(getInput, schema);
-  testAuthorization(getInput, schema, invalidAuthorizationSecinaros);
-  testSchema(
-    (field: string, value: unknown) => ({
-      ...getInput(),
-      [field]: value,
-    }),
-    schema,
-    requiredFields,
-    roles,
-  );
-  testBusniess(
-    (field: string, value: unknown) => ({
-      ...getInput(),
-      [field]: value,
-    }),
-    schema,
-    requiredFields,
-    roles,
-    commonInvalidEnrollmentValues,
-    specificInvalidEnrollmentValues,
-  );
-  for (let object of objectsNotFound) {
-    testObjectNotFound(
-      () => ({
-        ...getInput(),
-        [object]: `QQ39655165fa16743197e17e`,
-      }),
-      schema,
-      roles,
-    );
-  }
-}
 
 describe("Testing enroll student by student", () => {
   const schema = ENROLL_STUDENT_BY_STUDENT;
@@ -178,6 +121,8 @@ describe("Testing enroll student by student", () => {
       requiredFields,
       roles,
       ["courseId"],
+      commonInvalidEnrollmentValues,
+      specificInvalidEnrollmentValues,
     );
 
     describe("Should return confilct if a student enrolls twice to the same course", () => {
@@ -264,6 +209,8 @@ describe("Testing enroll student by admin", () => {
       requiredFields,
       roles,
       ["courseId", "studentId"],
+      commonInvalidEnrollmentValues,
+      specificInvalidEnrollmentValues,
     );
 
     describe("Should return confilct if a student enrolls twice to the same course", () => {
@@ -353,6 +300,8 @@ describe("Testing get enrollment by student", () => {
       requiredFields,
       roles,
       ["courseId"],
+      commonInvalidEnrollmentValues,
+      specificInvalidEnrollmentValues,
     );
   });
 });
@@ -408,6 +357,8 @@ describe("Testing get enrollment by admin", () => {
       requiredFields,
       roles,
       ["courseId", "studentId"],
+      commonInvalidEnrollmentValues,
+      specificInvalidEnrollmentValues,
     );
   });
 });
@@ -464,6 +415,8 @@ describe("Testing unenroll student by student", () => {
       requiredFields,
       roles,
       ["courseId"],
+      commonInvalidEnrollmentValues,
+      specificInvalidEnrollmentValues,
     );
 
     describe("Should return confilct if a student unroll from a confirmed enrollment request", () => {
@@ -541,6 +494,8 @@ describe("Testing unenroll student by admin", () => {
       requiredFields,
       roles,
       ["courseId", "studentId"],
+      commonInvalidEnrollmentValues,
+      specificInvalidEnrollmentValues,
     );
 
     describe("Should return confilct if a student unroll from a confirmed enrollment request", () => {
@@ -635,6 +590,8 @@ describe("Testing confirm a student enrollment", () => {
       requiredFields,
       roles,
       ["courseId", "studentId"],
+      commonInvalidEnrollmentValues,
+      specificInvalidEnrollmentValues,
     );
   });
 });

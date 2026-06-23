@@ -44,14 +44,14 @@ export const courseSchema: string = `#graphql
         categories: [String!]
     }    
     type Query {
-        course(_id: String!):Course!
+        course(input: _IdInput!):Course!
         courses:[Course!]!
     }
 
     type Mutation {
         createCourseByInstructor(input: CreateCourseByInstructorInput!): Course!
         createCourseByAdmin(input: CreateCourseByAdminInput!): Course!
-        deleteCourseById(_id: String!): Boolean!
+        deleteCourseById(input: _IdInput!): Boolean!
         updateCourseById(input: UpdateCourseByIdInput!): Boolean!
     }
 `;

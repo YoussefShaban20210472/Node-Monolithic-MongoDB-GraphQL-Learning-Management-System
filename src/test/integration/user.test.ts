@@ -33,12 +33,7 @@ import {
   testAuthenication,
   testAuthorization,
 } from "./shared/auth-test.shared.js";
-import { testSchema } from "./shared/schema-test.shared.js";
-import {
-  testBusniess,
-  testObjectNotFound,
-} from "./shared/busniess-test.shared.js";
-import { test } from "./shared/common-test.shared.js";
+import { test, testCommon } from "./shared/common-test.shared.js";
 import { Response } from "supertest";
 import {
   testUpdateManyFields,
@@ -121,29 +116,13 @@ describe("Testing create user", () => {
   describe("Negative", () => {
     const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
     const user = createRandomUser();
-    testAuthenication(() => user, schema);
-    testAuthorization(
-      () => createRandomUser(),
+    testCommon(
       schema,
+      () => user,
       invalidAuthorizationSecinaros,
-    );
-    testSchema(
-      (field: string, value: unknown) => ({
-        ...user,
-        [field]: value,
-      }),
-      schema,
       requiredUserFields,
       rolesLocal,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...user,
-        [field]: value,
-      }),
-      schema,
-      requiredUserFields,
-      rolesLocal,
+      [],
       commonInvalidUserValues,
       specificInvalidUserValues,
     );
@@ -173,7 +152,7 @@ describe("Testing delete user by id", () => {
           },
         ];
         await test(
-          _id,
+          { _id },
           adminCookie,
           schema,
           200,
@@ -187,24 +166,16 @@ describe("Testing delete user by id", () => {
 
   describe("Negative", () => {
     const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
-
-    testAuthenication(() => userId, schema);
-    testAuthorization(() => userId, schema, invalidAuthorizationSecinaros);
-    testSchema(
-      (field: string, value: unknown) => value,
+    testCommon(
       schema,
+      () => ({ _id: userId }),
+      invalidAuthorizationSecinaros,
       idField,
       rolesLocal,
-    );
-    testBusniess(
-      (field: string, value: unknown) => value,
-      schema,
-      idField,
-      rolesLocal,
+      ["_id"],
       commonInvalidUserValues,
       idSpecificInvalidField,
     );
-    testObjectNotFound(() => `QQ${userId.slice(2)}`, schema, rolesLocal);
   });
 });
 
@@ -230,7 +201,7 @@ describe("Testing get user by id", () => {
           },
         ];
         await test(
-          _id,
+          { _id },
           adminCookie,
           schema,
           200,
@@ -244,23 +215,16 @@ describe("Testing get user by id", () => {
 
   describe("Negative", () => {
     const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
-    testAuthenication(() => userId, schema);
-    testAuthorization(() => userId, schema, invalidAuthorizationSecinaros);
-    testSchema(
-      (field: string, value: unknown) => value,
+    testCommon(
       schema,
+      () => ({ _id: userId }),
+      invalidAuthorizationSecinaros,
       idField,
       rolesLocal,
-    );
-    testBusniess(
-      (field: string, value: unknown) => value,
-      schema,
-      idField,
-      rolesLocal,
+      ["_id"],
       commonInvalidUserValues,
       idSpecificInvalidField,
     );
-    testObjectNotFound(() => `QQ${userId.slice(2)}`, schema, rolesLocal);
   });
 });
 describe("Testing get all users", () => {
@@ -440,27 +404,16 @@ describe("Testing update me", () => {
       email: user.email,
       address: user.address,
     });
-    testAuthenication(input, schema);
-    testSchema(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
+    testCommon(
       schema,
+      input,
+      [],
       updateUserFields,
       rolesLocal,
-      true,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
-      schema,
-      updateUserFields,
-      rolesLocal,
+      [],
       commonInvalidUserValues,
       specificInvalidUserValues,
+      { allowMissing: true },
     );
     describe("Should reject duplicate email/phoneNumber", () => {
       const getInput = (duplicate: "email" | "phoneNumber") => ({
@@ -561,28 +514,16 @@ describe("Testing update user by id", () => {
       email: user.email,
       address: user.address,
     });
-    testAuthenication(input, schema);
-    testAuthorization(input, schema, invalidAuthorizationSecinaros);
-    testSchema(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
+    testCommon(
       schema,
+      input,
+      invalidAuthorizationSecinaros,
       requiredFields,
       rolesLocal,
-      true,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
-      schema,
-      requiredFields,
-      rolesLocal,
+      ["_id"],
       commonInvalidUserValues,
       specificInvalidValues,
+      { allowMissing: true },
     );
     describe("Should reject duplicate email/phoneNumber", () => {
       const getInput = (duplicate: "email" | "phoneNumber") => ({

@@ -147,7 +147,7 @@ export async function getPartialCourseById(
 export async function getAllCourses(): Promise<CourseGraphql[]> {
   const db = await connect();
   let collection = db.collection<Course>("courses");
-  const results = await collection.find().toArray();
+  const results = await collection.find().limit(10).toArray();
   return await getCourses(results);
 }
 export async function getCoursesByInstructorId(
@@ -157,6 +157,7 @@ export async function getCoursesByInstructorId(
   let collection = db.collection<Course>("courses");
   const results = await collection
     .find({ instructorId: new ObjectId(instructorId) })
+    .limit(10)
     .toArray();
   return await getCourses(results);
 }

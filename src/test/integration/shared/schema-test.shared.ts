@@ -30,7 +30,7 @@ function testSchemaMissing(
   field: string,
   allowMissing: boolean = false,
 ) {
-  if (allowMissing) return;
+  if (allowMissing === true) return;
   missingValues.forEach((value) => {
     testSchemaCommon(getInput, schema, role, field, "missing", value);
   });

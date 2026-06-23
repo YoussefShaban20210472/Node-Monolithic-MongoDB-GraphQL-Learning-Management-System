@@ -5,16 +5,14 @@ import { Context, IdArgs } from "../graphql/interface/interface.graphql.js";
 import { isInstructorIsCourseCreator } from "../service/course.service.js";
 
 export async function assertCourseCreator(
-  args: IdArgs | UpdateCourseByIdArgs | UpdateEnrollmentArgs,
+  args: IdArgs | UpdateEnrollmentArgs,
   context: Context,
 ) {
   const role = context.req.session.role;
   if (role != "INSTRUCTOR") return;
   const instructorId = context.req.session.userId!;
   let _id: string;
-  if ("_id" in args) {
-    _id = args._id;
-  } else if ("_id" in args.input) {
+  if ("_id" in args.input) {
     _id = args.input._id;
   } else {
     _id = args.input.courseId;

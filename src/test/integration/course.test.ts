@@ -1,50 +1,21 @@
 import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import {
-  createRandomUserAndGetId,
   createRandomUserAndLoginAndGetCookie,
-  createUserAndGetId,
-  createUserAndLoginAndGetCookie,
   getUserId,
   loginAndGetCookie,
 } from "../utils/helper/user.helper.js";
 import {
   adminLogin,
-  adminUser,
   instructorLogin,
-  requiredUserFields,
   studentLogin,
   updateUserFields,
 } from "../graphql/fixture/user.fixture.graphql.js";
-import {
-  CREATE_USER,
-  DELETE_ME,
-  DELETE_USER_BY_ID,
-  GET_ALL_USERS,
-  GET_ME,
-  GET_USER_BY_ID,
-  UPDATE_ME,
-  UPDATE_USER_BY_ID,
-} from "../graphql/operation/user.operation.graphql.js";
-import { createRandomUser } from "../utils/factory/user.factory.js";
-import {
-  commonInvalidUserValues,
-  specificInvalidUserValues,
-} from "../graphql/fixture/user-invalid.fixture.graphql.js";
-import {
-  testAuthenication,
-  testAuthorization,
-} from "./shared/auth-test.shared.js";
-import { testSchema } from "./shared/schema-test.shared.js";
-import {
-  testBusniess,
-  testObjectNotFound,
-} from "./shared/busniess-test.shared.js";
-import { test } from "./shared/common-test.shared.js";
+
+import { commonInvalidUserValues } from "../graphql/fixture/user-invalid.fixture.graphql.js";
+import { testAuthenication } from "./shared/auth-test.shared.js";
+import { testBusniess } from "./shared/busniess-test.shared.js";
+import { test, testCommon } from "./shared/common-test.shared.js";
 import { Response } from "supertest";
-import {
-  testUpdateManyFields,
-  testUpdateOneField,
-} from "./shared/update-test.shared.js";
 import {
   CREATE_COURSE_BY_ADMIN,
   CREATE_COURSE_BY_INSTRUCTOR,
@@ -136,26 +107,13 @@ describe("Testing create course by instructor", () => {
       { type: "INSTRUCTOR", getCookie: () => instructorCookie },
     ];
     const course = createRandomCourse();
-    console.log(course);
-    testAuthenication(() => course, schema);
-    testAuthorization(() => course, schema, invalidAuthorizationSecinaros);
-    testSchema(
-      (field: string, value: unknown) => ({
-        ...course,
-        [field]: value,
-      }),
+    testCommon(
       schema,
+      () => course,
+      invalidAuthorizationSecinaros,
       requiredCourseFields,
       rolesLocal,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...course,
-        [field]: value,
-      }),
-      schema,
-      requiredCourseFields,
-      roles,
+      [],
       commonInvalidCourseValues,
       specificInvalidCourseValues,
     );
@@ -210,25 +168,13 @@ describe("Testing create course by admin", () => {
       ...specificInvalidCourseValues,
       instructorId: [],
     };
-    testAuthenication(() => course, schema);
-    testAuthorization(() => course, schema, invalidAuthorizationSecinaros);
-    testSchema(
-      (field: string, value: unknown) => ({
-        ...course,
-        [field]: value,
-      }),
+    testCommon(
       schema,
+      () => course,
+      invalidAuthorizationSecinaros,
       requiredFields,
       rolesLocal,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...course,
-        [field]: value,
-      }),
-      schema,
-      requiredFields,
-      roles,
+      [],
       commonInvalidCourseValues,
       specificInvalidValues,
     );
@@ -262,7 +208,7 @@ describe("Testing delete course by id", () => {
           },
         ];
         await test(
-          courseId,
+          { _id: courseId },
           adminCookie,
           schema,
           200,
@@ -275,23 +221,16 @@ describe("Testing delete course by id", () => {
   });
 
   describe("Negative", () => {
-    testAuthenication(() => courseId, schema);
-    testAuthorization(() => courseId, schema, invalidAuthorizationSecinaros);
-    testSchema(
-      (field: string, value: unknown) => value,
+    testCommon(
       schema,
+      () => ({ _id: courseId }),
+      invalidAuthorizationSecinaros,
       idField,
       roles,
-    );
-    testBusniess(
-      (field: string, value: unknown) => value,
-      schema,
-      idField,
-      roles,
+      ["_id"],
       commonInvalidUserValues,
       idSpecificInvalidField,
     );
-    testObjectNotFound(() => `QQ${courseId.slice(2)}`, schema, roles);
   });
 });
 
@@ -312,7 +251,7 @@ describe("Testing get course by id", () => {
           },
         ];
         await test(
-          courseId,
+          { _id: courseId },
           role.getCookie(),
           schema,
           200,
@@ -329,25 +268,16 @@ describe("Testing get course by id", () => {
       ...roles,
       { type: "STUDENT", getCookie: () => studentCookie },
     ];
-    testAuthenication(() => courseId, schema);
-    testAuthorization(() => courseId, schema, [
-      invalidAuthorizationSecinaros[1],
-    ]);
-    testSchema(
-      (field: string, value: unknown) => value,
+    testCommon(
       schema,
+      () => ({ _id: courseId }),
+      [invalidAuthorizationSecinaros[1]],
       idField,
       rolesLocal,
-    );
-    testBusniess(
-      (field: string, value: unknown) => value,
-      schema,
-      idField,
-      rolesLocal,
+      ["_id"],
       commonInvalidUserValues,
       idSpecificInvalidField,
     );
-    testObjectNotFound(() => `QQ${courseId.slice(2)}`, schema, rolesLocal);
   });
 });
 
@@ -490,28 +420,16 @@ describe("Testing update user by id", () => {
     });
     const requiredFields = [...requiredCourseFields, { name: "_id" }];
     const specificInvalidValues = { ...specificInvalidCourseValues, _id: [] };
-    testAuthenication(input, schema);
-    testAuthorization(input, schema, invalidAuthorizationSecinaros);
-    testSchema(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
+    testCommon(
       schema,
+      () => ({ _id: courseId }),
+      invalidAuthorizationSecinaros,
       requiredFields,
       roles,
-      true,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
-      schema,
-      requiredFields,
-      roles,
+      ["_id"],
       commonInvalidCourseValues,
       specificInvalidValues,
+      { allowMissing: true },
     );
     testBusniess(
       (field: string, value: unknown) => ({

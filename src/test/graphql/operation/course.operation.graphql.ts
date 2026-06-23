@@ -29,13 +29,13 @@ export const CREATE_COURSE_BY_ADMIN = `
       }
     `;
 export const DELETE_COURSE_BY_ID = `
-      mutation DeleteCourseById($input: String!) {
-        deleteCourseById(_id: $input)
+      mutation DeleteCourseById($input: _IdInput!) {
+        deleteCourseById(input: $input)
       }
     `;
 export const GET_COURSE_BY_ID = `
-      query GetCourseById($input: String!) {
-        course(_id: $input){
+      query GetCourseById($input: _IdInput!) {
+        course(input: $input){
         _id
         title
         description

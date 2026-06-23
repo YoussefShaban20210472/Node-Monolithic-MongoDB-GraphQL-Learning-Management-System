@@ -37,7 +37,7 @@ export async function deleteCourseById(
   __: Context,
   ___: unknown,
 ): Promise<boolean> {
-  const result = await courseService.deleteCourseById(args._id);
+  const result = await courseService.deleteCourseById(args.input._id);
   return result;
 }
 
@@ -47,7 +47,7 @@ export async function getCourseById(
   __: Context,
   ___: unknown,
 ): Promise<CourseGraphql> {
-  const result = await courseService.getCourseById(args._id);
+  const result = await courseService.getCourseById(args.input._id);
   return result;
 }
 export async function getAllCourses(

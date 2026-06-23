@@ -20,6 +20,9 @@ export const userSchema: string = `#graphql
         password: String!
         address: String!
         role: String!
+    }    
+    input _IdInput {
+        _id: String!
     }
 
     input UpdateUserByIdInput {
@@ -39,13 +42,13 @@ export const userSchema: string = `#graphql
     }
     type Query {
         users: [User!]!
-        user(_id: String!): User!
+        user(input: _IdInput!): User!
         me: User!
     }
 
     type Mutation {
         createUser(input: CreateUserInput!): User!
-        deleteUserById(_id: String!): Boolean!
+        deleteUserById(input: _IdInput!): Boolean!
         deleteMe: Boolean!        
         updateUserById(input: UpdateUserByIdInput!): Boolean!
         updateMe(input: UpdateMeInput!): Boolean!

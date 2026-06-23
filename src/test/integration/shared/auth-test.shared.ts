@@ -21,6 +21,7 @@ export function testAuthorization(
     getCookie: () => string;
   }[],
 ) {
+  if (invalidAuthorizationSecinaros.length === 0) return;
   describe("Authorization Validation (Unauthorized)", () => {
     invalidAuthorizationSecinaros.forEach((secinaro) => {
       it(`Should return Forbidden if the authorization is rejected (${secinaro.type})`, async () => {

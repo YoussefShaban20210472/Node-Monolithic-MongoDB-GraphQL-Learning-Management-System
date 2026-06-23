@@ -11,8 +11,8 @@ export const CREATE_USER = `
       }
     `;
 export const GET_USER_BY_ID = `
-      query GetUserById($input: String!) {
-        user(_id: $input) {
+      query GetUserById($input: _IdInput!) {
+        user(input: $input) {
           _id
           firstName
           lastName
@@ -23,8 +23,8 @@ export const GET_USER_BY_ID = `
       }
     `;
 export const DELETE_USER_BY_ID = `
-      mutation DeleteUserById($input: String!) {
-        deleteUserById(_id: $input)
+      mutation DeleteUserById($input: _IdInput!) {
+        deleteUserById(input: $input)
       }
     `;
 export const GET_ALL_USERS = `

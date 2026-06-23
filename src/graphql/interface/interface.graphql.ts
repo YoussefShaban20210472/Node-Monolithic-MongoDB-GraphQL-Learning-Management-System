@@ -12,5 +12,5 @@ export type Context = {
 };
 
 export interface IdArgs {
-  _id: string;
+  input: { _id: string };
 }
