@@ -25,10 +25,7 @@ import {
   UPDATE_USER_BY_ID,
 } from "../graphql/operation/user.operation.graphql.js";
 import { createRandomUser } from "../utils/factory/user.factory.js";
-import {
-  commonInvalidUserValues,
-  specificInvalidUserValues,
-} from "../graphql/fixture/user-invalid.fixture.graphql.js";
+
 import {
   testAuthenication,
   testAuthorization,
@@ -494,7 +491,6 @@ describe("Testing update user by id", () => {
       ...updateUserFields,
       { name: "_id", domain: "ID" },
     ] as const;
-    const specificInvalidValues = { ...specificInvalidUserValues, _id: [] };
     const user = createRandomUser();
     const input = () => ({
       _id: userId,

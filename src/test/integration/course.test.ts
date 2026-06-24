@@ -11,7 +11,6 @@ import {
   updateUserFields,
 } from "../graphql/fixture/user.fixture.graphql.js";
 
-import { commonInvalidUserValues } from "../graphql/fixture/user-invalid.fixture.graphql.js";
 import { testAuthenication } from "./shared/auth-test.shared.js";
 import { testBusniess } from "./shared/busniess-test.shared.js";
 import { test, testCommon } from "./shared/common-test.shared.js";
@@ -26,10 +25,7 @@ import {
 } from "../graphql/operation/course.operation.graphql.js";
 import { createRandomCourse } from "../utils/factory/course.factory.js";
 import { requiredCourseFields } from "../graphql/fixture/course.fixture.graphql.js";
-import {
-  commonInvalidCourseValues,
-  specificInvalidCourseValues,
-} from "../graphql/fixture/course-invalid.fixture.graphql.js";
+
 import {
   createCourseAndGetId,
   createRandomCourseAndGetId,
@@ -154,10 +150,7 @@ describe("Testing create course by admin", () => {
       ...requiredCourseFields,
       { name: "instructorId", domain: "ID" },
     ] as const;
-    const specificInvalidValues = {
-      ...specificInvalidCourseValues,
-      instructorId: [],
-    };
+
     testCommon(
       schema,
       () => course,
@@ -397,7 +390,6 @@ describe("Testing update user by id", () => {
       ...requiredCourseFields,
       { name: "_id", domain: "ID" },
     ] as const;
-    const specificInvalidValues = { ...specificInvalidCourseValues, _id: [] };
     testCommon(
       schema,
       () => ({ _id: courseId }),
