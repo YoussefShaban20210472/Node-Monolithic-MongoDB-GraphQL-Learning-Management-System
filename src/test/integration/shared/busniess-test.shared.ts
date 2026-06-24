@@ -1,47 +1,76 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { test } from "./common-test.shared.js";
+import { invalidGraphQLDomains } from "../../utils/value-builder.js";
+import { graphqlDomains } from "../../graphql/fixture/graphql-domains.fixture.graphql.js";
+import {
+  invalidCourseDurationFields,
+  invalidObjectDurationFields,
+} from "../../utils/date-builder.js";
 
 export function testBusniess(
   getInput: (field: string, value: unknown) => unknown,
   schema: string,
-  requiredFields: readonly { name: string; type?: unknown }[],
+  requiredFields: readonly {
+    name: string;
+    type?: string;
+    domain: graphqlDomains;
+  }[],
   roles: { type: string; getCookie: () => string }[],
-  commonInvalidValues: readonly unknown[],
-  specificInvalidValues: Record<string, unknown[]>,
 ) {
   describe("Business Validation (Empty, Invalid)", () => {
     roles.forEach((role) => {
       requiredFields.forEach((field) => {
-        const invalidBusniessSecinaros = [
-          { type: "empty", values: [""] },
-          {
-            type: "invalid",
-            values: [
-              ...commonInvalidValues,
-              ...specificInvalidValues[field.name],
-            ],
-          },
-        ];
-        invalidBusniessSecinaros.forEach((secinaro) => {
-          secinaro.values.forEach((value) => {
-            it(`Should return Bad Request if the ${field.name} is ${secinaro.type} (${value}) (${role.type})`, async () => {
-              await test(
-                getInput(field.name, value),
-                role.getCookie(),
-                schema,
-                200,
-                "defined",
-                "null",
-                [],
-              );
-            });
-          });
-        });
+        testBusniessEmpty(getInput, schema, role, field.name, field.type);
+        testBusniessInvalid(getInput, schema, role, field.name, field.domain);
       });
     });
   });
 }
 
+export function testBusniessEmpty(
+  getInput: (field: string, value: unknown) => unknown,
+  schema: string,
+  role: { type: string; getCookie: () => string },
+  field: string,
+  fieldType: string | undefined,
+) {
+  if (fieldType === "String" || fieldType === undefined)
+    it(`Should return Bad Request if the ${field} is empty ("") (${role.type})`, async () => {
+      await test(
+        getInput(field, ""),
+        role.getCookie(),
+        schema,
+        200,
+        "defined",
+        "null",
+        [],
+      );
+    });
+}
+
+export function testBusniessInvalid(
+  getInput: (field: string, value: unknown) => unknown,
+  schema: string,
+  role: { type: string; getCookie: () => string },
+  field: string,
+  fieldDomain: graphqlDomains,
+) {
+  const values = invalidGraphQLDomains[fieldDomain];
+  console.log(values);
+  values.forEach((value) => {
+    it(`Should return Bad Request if the ${field} is invalid (${value}) (${role.type})`, async () => {
+      await test(
+        getInput(field, value),
+        role.getCookie(),
+        schema,
+        200,
+        "defined",
+        "null",
+        [],
+      );
+    });
+  });
+}
 export function testObjectNotFound(
   getInput: () => unknown,
   schema: string,
@@ -59,6 +88,50 @@ export function testObjectNotFound(
           "null",
           [],
         );
+      });
+    });
+  });
+}
+
+export function testDuration(
+  schema: string,
+  getInput: (field: string, value: unknown) => object,
+  roles: {
+    type: string;
+    getCookie: () => string;
+  }[],
+  type: "Course" | "Object" = "Object",
+) {
+  const requiredFields: { name: "startDate" | "endDate"; domain: "Date" }[] = [
+    { name: "startDate", domain: "Date" },
+    { name: "endDate", domain: "Date" },
+  ];
+  let invalidDuriationFields: {
+    startDate: string[];
+    endDate: string[];
+  };
+  if (type === "Course") {
+    invalidDuriationFields = invalidCourseDurationFields;
+  } else {
+    invalidDuriationFields = invalidObjectDurationFields;
+  }
+  describe(`${type} Duration Validation`, () => {
+    roles.forEach((role) => {
+      requiredFields.forEach((field) => {
+        const values = invalidDuriationFields[field.name];
+        values.forEach((value) => {
+          it(`Should return Bad Request if the ${field.name} is invalid (${value}) (${role.type})`, async () => {
+            await test(
+              getInput(field.name, value),
+              role.getCookie(),
+              schema,
+              200,
+              "defined",
+              "null",
+              [],
+            );
+          });
+        });
       });
     });
   });

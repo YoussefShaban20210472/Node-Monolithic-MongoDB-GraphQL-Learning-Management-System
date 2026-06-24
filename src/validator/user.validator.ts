@@ -53,7 +53,7 @@ function getAddressZObject() {
     })
     .min(4, "address must be at least 4 characters")
     .max(1000, "address must be at maximum 1000 characters")
-    .regex(/^\d{1,5}\s\w.\s(\b\w*\b\s){1,2}\w*\.$/, {
+    .regex(/^\d{1,5}\s\w.\s(\b\w+\b\s){1,2}\w*\.$/, {
       error: (issue) =>
         issue.input!.length < 4
           ? "address must be at least 4 letters"

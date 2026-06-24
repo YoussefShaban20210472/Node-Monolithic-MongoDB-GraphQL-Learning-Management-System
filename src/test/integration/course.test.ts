@@ -30,7 +30,6 @@ import {
   commonInvalidCourseValues,
   specificInvalidCourseValues,
 } from "../graphql/fixture/course-invalid.fixture.graphql.js";
-import { invalidCourseDuriationFields } from "../utils/date-builder.js";
 import {
   createCourseAndGetId,
   createRandomCourseAndGetId,
@@ -44,8 +43,7 @@ let instructorId: string;
 let dumyId: string = "6a32819b438924494803bf97";
 let course = createRandomCourse();
 let courseId: string;
-const idField = [{ name: "_id" }] as const;
-const idSpecificInvalidField = { _id: [] };
+const idField = [{ name: "_id", domain: "ID" }] as const;
 
 beforeAll(async () => {
   adminCookie = await loginAndGetCookie(adminLogin);
@@ -114,19 +112,8 @@ describe("Testing create course by instructor", () => {
       requiredCourseFields,
       rolesLocal,
       [],
-      commonInvalidCourseValues,
-      specificInvalidCourseValues,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...course,
-        [field]: value,
-      }),
-      schema,
-      [{ name: "startDate" }, { name: "endDate" }],
-      rolesLocal,
-      [],
-      invalidCourseDuriationFields,
+      { duration: true },
+      "Course",
     );
   });
 });
@@ -163,7 +150,10 @@ describe("Testing create course by admin", () => {
     ];
     const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
     const course = { ...createRandomCourse(), instructorId: dumyId };
-    const requiredFields = [...requiredCourseFields, { name: "instructorId" }];
+    const requiredFields = [
+      ...requiredCourseFields,
+      { name: "instructorId", domain: "ID" },
+    ] as const;
     const specificInvalidValues = {
       ...specificInvalidCourseValues,
       instructorId: [],
@@ -175,19 +165,8 @@ describe("Testing create course by admin", () => {
       requiredFields,
       rolesLocal,
       [],
-      commonInvalidCourseValues,
-      specificInvalidValues,
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...course,
-        [field]: value,
-      }),
-      schema,
-      [{ name: "startDate" }, { name: "endDate" }],
-      rolesLocal,
-      [],
-      invalidCourseDuriationFields,
+      { duration: true },
+      "Course",
     );
   });
 });
@@ -228,8 +207,6 @@ describe("Testing delete course by id", () => {
       idField,
       roles,
       ["_id"],
-      commonInvalidUserValues,
-      idSpecificInvalidField,
     );
   });
 });
@@ -275,8 +252,6 @@ describe("Testing get course by id", () => {
       idField,
       rolesLocal,
       ["_id"],
-      commonInvalidUserValues,
-      idSpecificInvalidField,
     );
   });
 });
@@ -418,7 +393,10 @@ describe("Testing update user by id", () => {
     const input = () => ({
       _id: courseId,
     });
-    const requiredFields = [...requiredCourseFields, { name: "_id" }];
+    const requiredFields = [
+      ...requiredCourseFields,
+      { name: "_id", domain: "ID" },
+    ] as const;
     const specificInvalidValues = { ...specificInvalidCourseValues, _id: [] };
     testCommon(
       schema,
@@ -427,20 +405,8 @@ describe("Testing update user by id", () => {
       requiredFields,
       roles,
       ["_id"],
-      commonInvalidCourseValues,
-      specificInvalidValues,
-      { allowMissing: true },
-    );
-    testBusniess(
-      (field: string, value: unknown) => ({
-        ...input(),
-        [field]: value,
-      }),
-      schema,
-      [{ name: "startDate" }, { name: "endDate" }],
-      roles,
-      [],
-      invalidCourseDuriationFields,
+      { allowMissing: true, duration: true },
+      "Course",
     );
   });
 });

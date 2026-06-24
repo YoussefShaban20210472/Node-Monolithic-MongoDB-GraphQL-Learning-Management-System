@@ -32,10 +32,6 @@ import {
   GET_ENROLLMENT_BY_STUDENT,
 } from "../graphql/operation/enrollment.operation.graphql.js";
 import {
-  commonInvalidEnrollmentValues,
-  specificInvalidEnrollmentValues,
-} from "../graphql/fixture/enrollment-invalid.fixture.graphql.js";
-import {
   confirmEnrollment,
   enrollStudent,
   enrollStudentById,
@@ -111,7 +107,7 @@ describe("Testing enroll student by student", () => {
       { type: "INSTRUCTOR", getCookie: () => instructorCookie },
     ];
     const roles = [{ type: "STUDENT", getCookie: () => studentCookie }];
-    const requiredFields = [{ name: "courseId" }];
+    const requiredFields = [{ name: "courseId", domain: "ID" }] as const;
     testCommon(
       schema,
       () => ({
@@ -121,8 +117,6 @@ describe("Testing enroll student by student", () => {
       requiredFields,
       roles,
       ["courseId"],
-      commonInvalidEnrollmentValues,
-      specificInvalidEnrollmentValues,
     );
 
     describe("Should return confilct if a student enrolls twice to the same course", () => {
@@ -198,7 +192,10 @@ describe("Testing enroll student by admin", () => {
       { type: "STUDENT", getCookie: () => studentCookie },
       { type: "INSTRUCTOR", getCookie: () => instructorCookie },
     ];
-    const requiredFields = [{ name: "courseId" }, { name: "studentId" }];
+    const requiredFields = [
+      { name: "courseId", domain: "ID" },
+      { name: "studentId", domain: "ID" },
+    ] as const;
     testCommon(
       schema,
       () => ({
@@ -209,8 +206,6 @@ describe("Testing enroll student by admin", () => {
       requiredFields,
       roles,
       ["courseId", "studentId"],
-      commonInvalidEnrollmentValues,
-      specificInvalidEnrollmentValues,
     );
 
     describe("Should return confilct if a student enrolls twice to the same course", () => {
@@ -290,7 +285,7 @@ describe("Testing get enrollment by student", () => {
       { type: "INSTRUCTOR", getCookie: () => instructorCookie },
     ];
     const roles = [{ type: "STUDENT", getCookie: () => studentCookie }];
-    const requiredFields = [{ name: "courseId" }];
+    const requiredFields = [{ name: "courseId", domain: "ID" }] as const;
     testCommon(
       schema,
       () => ({
@@ -300,8 +295,6 @@ describe("Testing get enrollment by student", () => {
       requiredFields,
       roles,
       ["courseId"],
-      commonInvalidEnrollmentValues,
-      specificInvalidEnrollmentValues,
     );
   });
 });
@@ -346,7 +339,10 @@ describe("Testing get enrollment by admin", () => {
       { type: "STUDENT", getCookie: () => studentCookie },
       { type: "INSTRUCTOR", getCookie: () => instructorCookie },
     ];
-    const requiredFields = [{ name: "courseId" }, { name: "studentId" }];
+    const requiredFields = [
+      { name: "courseId", domain: "ID" },
+      { name: "studentId", domain: "ID" },
+    ] as const;
     testCommon(
       schema,
       () => ({
@@ -357,8 +353,6 @@ describe("Testing get enrollment by admin", () => {
       requiredFields,
       roles,
       ["courseId", "studentId"],
-      commonInvalidEnrollmentValues,
-      specificInvalidEnrollmentValues,
     );
   });
 });
@@ -405,7 +399,7 @@ describe("Testing unenroll student by student", () => {
       { type: "INSTRUCTOR", getCookie: () => instructorCookie },
     ];
     const roles = [{ type: "STUDENT", getCookie: () => studentCookie }];
-    const requiredFields = [{ name: "courseId" }];
+    const requiredFields = [{ name: "courseId", domain: "ID" }] as const;
     testCommon(
       schema,
       () => ({
@@ -415,8 +409,6 @@ describe("Testing unenroll student by student", () => {
       requiredFields,
       roles,
       ["courseId"],
-      commonInvalidEnrollmentValues,
-      specificInvalidEnrollmentValues,
     );
 
     describe("Should return confilct if a student unroll from a confirmed enrollment request", () => {
@@ -483,7 +475,10 @@ describe("Testing unenroll student by admin", () => {
       { type: "STUDENT", getCookie: () => studentCookie },
       { type: "INSTRUCTOR", getCookie: () => instructorCookie },
     ];
-    const requiredFields = [{ name: "courseId" }, { name: "studentId" }];
+    const requiredFields = [
+      { name: "courseId", domain: "ID" },
+      { name: "studentId", domain: "ID" },
+    ] as const;
     testCommon(
       schema,
       () => ({
@@ -494,8 +489,6 @@ describe("Testing unenroll student by admin", () => {
       requiredFields,
       roles,
       ["courseId", "studentId"],
-      commonInvalidEnrollmentValues,
-      specificInvalidEnrollmentValues,
     );
 
     describe("Should return confilct if a student unroll from a confirmed enrollment request", () => {
@@ -575,10 +568,10 @@ describe("Testing confirm a student enrollment", () => {
       },
     ];
     const requiredFields = [
-      { name: "courseId" },
-      { name: "studentId" },
-      { name: "status" },
-    ];
+      { name: "courseId", domain: "ID" },
+      { name: "studentId", domain: "ID" },
+      { name: "status", domain: "EnrollmentStatus" },
+    ] as const;
     testCommon(
       schema,
       () => ({
@@ -590,8 +583,6 @@ describe("Testing confirm a student enrollment", () => {
       requiredFields,
       roles,
       ["courseId", "studentId"],
-      commonInvalidEnrollmentValues,
-      specificInvalidEnrollmentValues,
     );
   });
 });

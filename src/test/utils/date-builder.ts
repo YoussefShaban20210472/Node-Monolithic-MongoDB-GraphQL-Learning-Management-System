@@ -15,7 +15,7 @@ export const courseEndDate = setYear(
 export const startDate = setMonth(new Date(courseEndDate), 1).toISOString();
 export const endDate = setMonth(new Date(startDate), 1).toISOString();
 
-export const invalidCourseDuriationFields = {
+export const invalidCourseDurationFields = {
   startDate: [
     ...createIntervals(new Date("2000-05-20T00:00:00Z"), new Date()),
     ...createIntervals(
@@ -43,7 +43,7 @@ export const invalidCourseDuriationFields = {
   ],
 };
 
-export const invalidObjectDuriationFields = {
+export const invalidObjectDurationFields = {
   startDate: [
     ...createIntervals(
       setYear(new Date(courseStartDate), -5),

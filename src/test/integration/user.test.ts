@@ -49,8 +49,7 @@ const invalidAuthorizationSecinaros = [
   { type: "instructor", getCookie: () => instructorCookie },
   { type: "student", getCookie: () => studentCookie },
 ];
-const idField = [{ name: "_id" }] as const;
-const idSpecificInvalidField = { _id: [] };
+const idField = [{ name: "_id", domain: "ID" }] as const;
 beforeAll(async () => {
   adminCookie = await loginAndGetCookie(adminLogin);
   instructorCookie = await loginAndGetCookie(instructorLogin);
@@ -80,6 +79,7 @@ async function testDuplicates(
     });
   });
 }
+
 describe("Testing create user", () => {
   const schema = CREATE_USER;
   describe("Positive", () => {
@@ -123,8 +123,6 @@ describe("Testing create user", () => {
       requiredUserFields,
       rolesLocal,
       [],
-      commonInvalidUserValues,
-      specificInvalidUserValues,
     );
     describe("Should reject duplicate email/phoneNumber", () => {
       roles.forEach((role) => {
@@ -173,8 +171,6 @@ describe("Testing delete user by id", () => {
       idField,
       rolesLocal,
       ["_id"],
-      commonInvalidUserValues,
-      idSpecificInvalidField,
     );
   });
 });
@@ -222,11 +218,10 @@ describe("Testing get user by id", () => {
       idField,
       rolesLocal,
       ["_id"],
-      commonInvalidUserValues,
-      idSpecificInvalidField,
     );
   });
 });
+
 describe("Testing get all users", () => {
   const schema = GET_ALL_USERS;
   describe("Positive", () => {
@@ -404,17 +399,9 @@ describe("Testing update me", () => {
       email: user.email,
       address: user.address,
     });
-    testCommon(
-      schema,
-      input,
-      [],
-      updateUserFields,
-      rolesLocal,
-      [],
-      commonInvalidUserValues,
-      specificInvalidUserValues,
-      { allowMissing: true },
-    );
+    testCommon(schema, input, [], updateUserFields, rolesLocal, [], {
+      allowMissing: true,
+    });
     describe("Should reject duplicate email/phoneNumber", () => {
       const getInput = (duplicate: "email" | "phoneNumber") => ({
         [duplicate]: adminUser[duplicate],
@@ -503,7 +490,10 @@ describe("Testing update user by id", () => {
   });
   describe("Negative", () => {
     const rolesLocal = [{ type: "ADMIN", getCookie: () => adminCookie }];
-    const requiredFields = [...updateUserFields, { name: "_id" }];
+    const requiredFields = [
+      ...updateUserFields,
+      { name: "_id", domain: "ID" },
+    ] as const;
     const specificInvalidValues = { ...specificInvalidUserValues, _id: [] };
     const user = createRandomUser();
     const input = () => ({
@@ -521,8 +511,6 @@ describe("Testing update user by id", () => {
       requiredFields,
       rolesLocal,
       ["_id"],
-      commonInvalidUserValues,
-      specificInvalidValues,
       { allowMissing: true },
     );
     describe("Should reject duplicate email/phoneNumber", () => {

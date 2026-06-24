@@ -3,8 +3,18 @@ import { graphqlRequest } from "../../utils/graphql-client.js";
 import { Response } from "supertest";
 import { testAuthenication, testAuthorization } from "./auth-test.shared.js";
 import { testSchema } from "./schema-test.shared.js";
-import { testBusniess, testObjectNotFound } from "./busniess-test.shared.js";
+import {
+  testBusniess,
+  testBusniessInvalid,
+  testDuration,
+  testObjectNotFound,
+} from "./busniess-test.shared.js";
 import { graphqlTypes } from "../../graphql/fixture/graphql-types.fixture.graphql.js";
+import { graphqlDomains } from "../../graphql/fixture/graphql-domains.fixture.graphql.js";
+import {
+  invalidCourseDurationFields,
+  invalidObjectDurationFields,
+} from "../../utils/date-builder.js";
 
 export async function test(
   input: unknown,
@@ -25,7 +35,7 @@ export async function test(
   const errors = response.body.errors;
   const data = response.body.data;
   const status = response.status;
-  console.log(response.body);
+  // console.log(response.body);
   expect(status).toBe(statusCode);
   switch (errorsCase) {
     case "defined":
@@ -62,24 +72,27 @@ export function testCommon(
     type: string;
     getCookie: () => string;
   }[],
-  requiredFields: readonly { name: string; type?: graphqlTypes }[],
+  requiredFields: readonly {
+    name: string;
+    type?: graphqlTypes;
+    domain: graphqlDomains;
+  }[],
   roles: {
     type: string;
     getCookie: () => string;
   }[],
   objectsNotFound: string[],
-  commonInvalidValues: readonly unknown[],
-  specificInvalidValues: Record<string, unknown[]>,
   allow: {
     authenication?: boolean;
     authorization?: boolean;
     schema?: boolean;
     busniess?: boolean;
-    notFound?: boolean;
     allowMissing?: boolean;
+    duration?: boolean;
+    durationType?: "Course" | "Object";
   } = {},
+  durationType?: "Course" | "Object",
 ) {
-  // let getInput2: (field: string, value: unknown) => unknown;
   if (allow.authenication !== false) testAuthenication(getInput, schema);
   if (allow.authorization !== false)
     testAuthorization(getInput, schema, invalidAuthorizationSecinaros);
@@ -103,18 +116,26 @@ export function testCommon(
       schema,
       requiredFields,
       roles,
-      commonInvalidValues,
-      specificInvalidValues,
     );
-  if (allow.notFound !== false)
-    for (let object of objectsNotFound) {
-      testObjectNotFound(
-        () => ({
-          ...getInput(),
-          [object]: `QQ39655165fa16743197e17e`,
-        }),
-        schema,
-        roles,
-      );
-    }
+
+  if (allow.duration === true)
+    testDuration(
+      schema,
+      (field: string, value: unknown) => ({
+        ...getInput(),
+        [field]: value,
+      }),
+      roles,
+      durationType,
+    );
+  for (let object of objectsNotFound) {
+    testObjectNotFound(
+      () => ({
+        ...getInput(),
+        [object]: `QQ39655165fa16743197e17e`,
+      }),
+      schema,
+      roles,
+    );
+  }
 }

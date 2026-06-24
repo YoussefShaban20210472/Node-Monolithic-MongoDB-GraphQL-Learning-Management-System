@@ -19,10 +19,10 @@ export function setMinute(date = new Date(), minute: number) {
   return date;
 }
 
-export function createIntervals(start: Date, end: Date) {
+export function createIntervals(start: Date, end: Date, size: number = 5) {
   const tempStart = new Date(start.getTime());
   const intervals = [];
-  const size = 5;
+  // const size = 5;
   for (let i = 0; i < size; i++) {
     if (tempStart.getFullYear() < end.getFullYear()) {
       tempStart.setFullYear(tempStart.getFullYear() + 1);
