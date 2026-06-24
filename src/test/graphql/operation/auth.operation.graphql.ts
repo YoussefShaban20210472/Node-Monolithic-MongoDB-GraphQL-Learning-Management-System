@@ -5,6 +5,8 @@ export const LOGIN = `
       firstName
       lastName
       email
+      address
+      role
     }
   }
 `;
