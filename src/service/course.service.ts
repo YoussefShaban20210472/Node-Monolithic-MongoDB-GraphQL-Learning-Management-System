@@ -24,10 +24,11 @@ export async function isInstructorIsCourseCreator(
   instructorId: string,
   _id: string,
 ) {
-  return (
-    (await courseRepository.getPartialCourseById(_id))?.instructorId ==
-    instructorId
-  );
+  const course = await courseRepository.getPartialCourseById(_id);
+  if (course == null) {
+    return false;
+  }
+  return course?.instructorId?.toString() == instructorId;
 }
 
 export async function deleteCourseById(_id: string) {
@@ -42,6 +43,14 @@ export async function deleteCourseById(_id: string) {
 export async function getCourseById(_id: string) {
   idSchema.parse({ _id });
   const result = await courseRepository.getCourseById(_id);
+  if (result == null) {
+    throw new ObjectNotFound("Course");
+  }
+  return result;
+}
+export async function getPartialCourseById(_id: string) {
+  idSchema.parse({ _id });
+  const result = await courseRepository.getPartialCourseById(_id);
   if (result == null) {
     throw new ObjectNotFound("Course");
   }

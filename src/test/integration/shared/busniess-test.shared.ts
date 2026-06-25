@@ -3,8 +3,12 @@ import { test } from "./common-test.shared.js";
 import { invalidGraphQLDomains } from "../../utils/value-builder.js";
 import { graphqlDomains } from "../../graphql/fixture/graphql-domains.fixture.graphql.js";
 import {
+  courseEndDate,
+  courseStartDate,
+  endDate,
   invalidCourseDurationFields,
   invalidObjectDurationFields,
+  startDate,
 } from "../../utils/date-builder.js";
 
 export function testBusniess(
@@ -106,21 +110,29 @@ export function testDuration(
     { name: "startDate", domain: "Date" },
     { name: "endDate", domain: "Date" },
   ];
+  let start: string;
+  let end: string;
   let invalidDuriationFields: {
     startDate: string[];
     endDate: string[];
   };
   if (type === "Course") {
     invalidDuriationFields = invalidCourseDurationFields;
+    start = courseStartDate;
+    end = courseEndDate;
   } else {
     invalidDuriationFields = invalidObjectDurationFields;
+    start = startDate;
+    end = endDate;
   }
   describe(`${type} Duration Validation`, () => {
     roles.forEach((role) => {
       requiredFields.forEach((field) => {
         const values = invalidDuriationFields[field.name];
         values.forEach((value) => {
-          it(`Should return Bad Request if the ${field.name} is invalid (${value}) (${role.type})`, async () => {
+          const s = field.name === "startDate" ? value : start;
+          const e = field.name === "endDate" ? value : end;
+          it(`Should return Bad Request if duration is invalid (${s}) (${e})  (${role.type})`, async () => {
             await test(
               getInput(field.name, value),
               role.getCookie(),

@@ -7,6 +7,19 @@ import {
 } from "../validator/enrollment.validator.js";
 import { Confilct, ObjectNotFound } from "../error/business.error.js";
 
+export async function isStudentIsCourseEnrolled(
+  studentId: string,
+  courseId: string,
+) {
+  const enrollment = await enrollmentRepository.getEnrollment({
+    courseId,
+    studentId,
+  });
+  if (enrollment == null) {
+    return false;
+  }
+  return enrollment.status === "ACCEPTED";
+}
 export async function enrollStudent(enrollment: Enrollment) {
   enrollmentSchema.parse(enrollment);
 

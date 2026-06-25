@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { BadRequest } from "../error/business.error.js";
+import { Course } from "../model/course.model.js";
+import { CourseGraphql } from "../graphql/interface/course.interface.graphql.js";
 
 export const HALF_HOUR = 1000 * 60 * 30;
 export const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -157,24 +160,31 @@ export function checkTimeBetweenNowAndYear(time: string) {
 
   return date >= now && date <= oneYearFromNow;
 }
-// function assertValidTimeAndDuration(course, object, objectName) {
-//   const course_start_date = new Date(course.start_date);
-//   const course_end_date = new Date(course.end_date);
-//   const start_date = new Date(object.start_date);
-//   const end_date = new Date(object.end_date);
-//   let message = undefined;
-//   if (start_date < course_start_date) {
-//     message = `${objectName} start date must start after course start date`;
-//   } else if (start_date >= course_end_date) {
-//     message = `${objectName} start date must start before course end date`;
-//   } else if (end_date > course_end_date) {
-//     message = `${objectName} end date must end before course end date`;
-//   }
-//   if (message) {
-//     throw new BadRequest(message);
-//   }
-// }
+export function assertValidTimeAndDuration(
+  course: Partial<CourseGraphql>,
+  object: { startDate: string | Date; endDate: string | Date },
+  objectName: string,
+) {
+  const courseStartDate = new Date(course.startDate!);
+  const courseEndDate = new Date(course.endDate!);
+  const startDate = new Date(object.startDate);
+  const endDate = new Date(object.endDate);
+  let message = undefined;
+  if (startDate < courseStartDate) {
+    message = `${objectName} start date must start after course start date`;
+  } else if (startDate >= courseEndDate) {
+    message = `${objectName} start date must start before course end date`;
+  } else if (endDate > courseEndDate) {
+    message = `${objectName} end date must end before course end date`;
+  }
+  if (message) {
+    throw new BadRequest(message);
+  }
+}
 
 export const idSchema = z.object({
   _id: getMongoDbIdZObject("_id"),
+});
+export const courseIdSchema = z.object({
+  courseId: getMongoDbIdZObject("courseId"),
 });

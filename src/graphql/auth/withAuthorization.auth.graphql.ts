@@ -8,10 +8,11 @@ export function withAuthorization<TArgs, TResult>(
     context: Context,
     __: unknown,
   ) => Promise<TResult> | TResult,
-  checkAuthoriation: (args: TArgs, context: Context) => Promise<void>,
+  authorizations: ((args: TArgs, context: Context) => Promise<void>)[],
 ) {
   return async (_: unknown, args: TArgs, context: Context, __: unknown) => {
-    await checkAuthoriation(args, context);
+    for (let authorization of authorizations)
+      await authorization(args, context);
     return await resolver(_, args, context, __);
   };
 }

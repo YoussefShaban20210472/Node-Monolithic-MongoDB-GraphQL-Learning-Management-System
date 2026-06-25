@@ -14,3 +14,6 @@ export type Context = {
 export interface IdArgs {
   input: { _id: string };
 }
+export interface CourseIdArgs {
+  input: { courseId: string };
+}

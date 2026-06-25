@@ -47,7 +47,7 @@ export const enrollmentResolver = {
         withMiddleware(withRole(updateEnrollment, ["ADMIN", "INSTRUCTOR"]), [
           assertStudentId,
         ]),
-        assertCourseCreator,
+        [assertCourseCreator],
       ),
     ),
   },

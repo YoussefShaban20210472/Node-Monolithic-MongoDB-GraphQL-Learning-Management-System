@@ -35,7 +35,7 @@ export async function test(
   const errors = response.body.errors;
   const data = response.body.data;
   const status = response.status;
-  // console.log(response.body);
+  console.log(response.body);
   expect(status).toBe(statusCode);
   switch (errorsCase) {
     case "defined":
@@ -89,7 +89,6 @@ export function testCommon(
     busniess?: boolean;
     allowMissing?: boolean;
     duration?: boolean;
-    durationType?: "Course" | "Object";
   } = {},
   durationType?: "Course" | "Object",
 ) {

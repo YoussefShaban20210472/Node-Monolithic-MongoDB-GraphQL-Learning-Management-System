@@ -24,7 +24,7 @@ export function createIntervals(start: Date, end: Date, size: number = 5) {
   const intervals = [];
   // const size = 5;
   for (let i = 0; i < size; i++) {
-    if (tempStart.getFullYear() < end.getFullYear()) {
+    if (tempStart.getFullYear() + 1 < end.getFullYear()) {
       tempStart.setFullYear(tempStart.getFullYear() + 1);
       intervals.push(tempStart.toISOString());
     } else {

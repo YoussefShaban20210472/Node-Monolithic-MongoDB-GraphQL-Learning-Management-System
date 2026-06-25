@@ -49,3 +49,11 @@ export async function confirmEnrollment(
     });
   expect(response.body.data.confirmEnrollment).toBe(true);
 }
+export async function enrollStudentAndAccept(
+  studentId: string,
+  courseId: string,
+  adminCookie: string,
+) {
+  await enrollStudentById(studentId, courseId, adminCookie);
+  await confirmEnrollment(studentId, courseId, adminCookie, "ACCEPTED");
+}

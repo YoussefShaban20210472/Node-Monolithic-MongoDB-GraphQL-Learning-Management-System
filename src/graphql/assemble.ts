@@ -6,16 +6,20 @@ import { courseSchema } from "./schema/course.schema.graphql.js";
 import { courseResolver } from "./resolver/course.resolver.graphql.js";
 import { enrollmentSchema } from "./schema/enrollment.schema.graphql.js";
 import { enrollmentResolver } from "./resolver/enrollment.resolver.graphql.js";
+import { lessonSchema } from "./schema/lesson.schema.graphql.js";
+import { lessonResolver } from "./resolver/lesson.resolver.graphql.js";
 
 export const typeDefs = [
   userSchema,
   authSchema,
   courseSchema,
   enrollmentSchema,
+  lessonSchema,
 ];
 export const resolvers = [
   userResolver,
   authResolver,
   courseResolver,
   enrollmentResolver,
+  lessonResolver,
 ];

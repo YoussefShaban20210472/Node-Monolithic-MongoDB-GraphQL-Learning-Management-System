@@ -14,7 +14,7 @@ import { errorHandler } from "../error/errorHandler.error.graphql.js";
 export const courseResolver = {
   Query: {
     course: errorHandler(
-      withAuthorization(withRole(getCourseById), assertCourseCreator),
+      withAuthorization(withRole(getCourseById), [assertCourseCreator]),
     ),
     courses: errorHandler(withRole(getAllCourses)),
   },
@@ -25,16 +25,14 @@ export const courseResolver = {
     ),
     createCourseByAdmin: errorHandler(withRole(createCourseByAdmin, ["ADMIN"])),
     deleteCourseById: errorHandler(
-      withAuthorization(
-        withRole(deleteCourseById, ["ADMIN", "INSTRUCTOR"]),
+      withAuthorization(withRole(deleteCourseById, ["ADMIN", "INSTRUCTOR"]), [
         assertCourseCreator,
-      ),
+      ]),
     ),
     updateCourseById: errorHandler(
-      withAuthorization(
-        withRole(updateCourseById, ["ADMIN", "INSTRUCTOR"]),
+      withAuthorization(withRole(updateCourseById, ["ADMIN", "INSTRUCTOR"]), [
         assertCourseCreator,
-      ),
+      ]),
     ),
   },
 };
