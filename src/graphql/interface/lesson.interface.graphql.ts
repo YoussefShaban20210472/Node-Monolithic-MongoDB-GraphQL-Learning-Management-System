@@ -13,10 +13,16 @@ export interface UpdateLessonByIdInput {
   startDate?: string;
   endDate?: string;
 }
+export interface LessonIdInput {
+  lessonId: string;
+}
 export interface CreateLessonArgs {
   input: CreateLessonInput;
 }
 
 export interface UpdateLessonByIdArgs {
   input: UpdateLessonByIdInput;
+}
+export interface LessonIdArgs {
+  input: LessonIdInput;
 }

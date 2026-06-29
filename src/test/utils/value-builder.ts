@@ -74,4 +74,14 @@ export const invalidGraphQLDomains = {
     ...generateRandomInvalidEnumStrings(["accepted", "rejected"]),
   ],
   ID: [...generateRandomInvalidIDStrings()],
+  OTP: [
+    ...generateRandomNumberStrings(0, 19),
+    ...generateRandomNumberStrings(256, 1000),
+
+    ...generateRandomAlphabetStrings(20, 255),
+    ...generateRandomSpecialCharacterStrings(20, 255),
+
+    ...generateRandomAlphanumericStrings(20, 255),
+    ...generateRandomMixStrings(20, 255),
+  ],
 };

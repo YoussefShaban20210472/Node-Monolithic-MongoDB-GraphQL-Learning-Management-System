@@ -30,3 +30,7 @@ export const updateLessonSchema = z
     endDate: getDateZObject("endDate").optional(),
   })
   .superRefine((data, ctx) => checkDuration(data, ctx, "minutes"));
+
+export const lessonIdSchema = z.object({
+  lessonId: getMongoDbIdZObject("lessonId"),
+});

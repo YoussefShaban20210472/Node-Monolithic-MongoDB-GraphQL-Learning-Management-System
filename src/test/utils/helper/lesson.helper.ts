@@ -1,5 +1,8 @@
 import { graphqlRequest } from "../graphql-client.js";
-import { CREATE_LESSON } from "../../graphql/operation/lesson.operation.graphql.js";
+import {
+  CREATE_LESSON,
+  GET_LESSON_OTP_BY_ID,
+} from "../../graphql/operation/lesson.operation.graphql.js";
 import { createRandomLesson } from "../factory/lesson.factory.js";
 
 export async function createLessonAndGetId(
@@ -22,4 +25,16 @@ export async function createRandomLessonAndGetId(
 ) {
   const lesson = createRandomLesson(courseId);
   return await createLessonAndGetId(lesson, adminCookie);
+}
+
+export async function getLessonOTPById(lessonId: string, adminCookie: string) {
+  const response = await graphqlRequest()
+    .set("Cookie", adminCookie)
+    .send({
+      query: GET_LESSON_OTP_BY_ID,
+      variables: {
+        input: { _id: lessonId },
+      },
+    });
+  return response.body.data.lessonOTP;
 }

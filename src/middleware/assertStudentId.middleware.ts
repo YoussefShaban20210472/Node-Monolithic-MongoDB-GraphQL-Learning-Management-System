@@ -3,12 +3,18 @@ import {
   ObjectNotFound,
   Unauthorized,
 } from "../error/business.error.js";
-import { UpdateCourseByIdArgs } from "../graphql/interface/course.interface.graphql.js";
+import {
+  AttendStudentByAdminArgs,
+  GetAttendanceArgs,
+} from "../graphql/interface/attendance.interface.graphql.js";
 import { EnrollmentArgs } from "../graphql/interface/enrollment.interface.graphql.js";
 import { Context, IdArgs } from "../graphql/interface/interface.graphql.js";
 import { isUserIdHasCorrectRole } from "../service/user.service.js";
 
-export async function assertStudentId(args: EnrollmentArgs, context: Context) {
+export async function assertStudentId(
+  args: EnrollmentArgs | AttendStudentByAdminArgs | GetAttendanceArgs,
+  context: Context,
+) {
   const role = context.req.session.role;
   if (role != "STUDENT") return;
   const studentId = args.input.studentId!;
