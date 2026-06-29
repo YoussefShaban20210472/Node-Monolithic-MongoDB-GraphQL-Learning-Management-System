@@ -13,4 +13,5 @@ export type graphqlDomains = keyof {
   EnrollmentStatus: string[];
   ID: string[];
   OTP: string[];
+  AssignmentScore: number[];
 };

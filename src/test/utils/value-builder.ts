@@ -2,6 +2,7 @@ import {
   generateRandomAlphabetStrings,
   generateRandomAlphanumericStrings,
   generateRandomDateStrings,
+  generateRandomIntegers,
   generateRandomInvalidAddressStrings,
   generateRandomInvalidDateStrings,
   generateRandomInvalidEmailStrings,
@@ -83,5 +84,9 @@ export const invalidGraphQLDomains = {
 
     ...generateRandomAlphanumericStrings(20, 255),
     ...generateRandomMixStrings(20, 255),
+  ],
+  AssignmentScore: [
+    ...generateRandomIntegers(-10000, -1),
+    ...generateRandomIntegers(101, 10000),
   ],
 };

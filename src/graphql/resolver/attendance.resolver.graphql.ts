@@ -1,6 +1,6 @@
 import { assertCourseCreator } from "../../auth/assertCourseCreator.auth.js";
 import { assertLessonCreator } from "../../auth/assertLessonCreator.auth.js";
-import { assertStudentEnrolled } from "../../auth/assertStudentEnrolled.auth.js";
+import { assertStudentEnrolledByLesson } from "../../auth/assertStudentEnrolled.auth.js";
 import {
   attendStudentByAdmin,
   attendStudentByStudent,
@@ -34,7 +34,7 @@ export const attendanceResolver = {
   Query: {
     attendanceByStudent: errorHandler(
       withAuthorization(withRole(getAttendanceByStudent, ["STUDENT"]), [
-        assertStudentEnrolled,
+        assertStudentEnrolledByLesson,
       ]),
     ),
     attendance: errorHandler(
@@ -59,7 +59,7 @@ export const attendanceResolver = {
   Mutation: {
     attendStudentByStudent: errorHandler(
       withAuthorization(withRole(attendStudentByStudent, ["STUDENT"]), [
-        assertStudentEnrolled,
+        assertStudentEnrolledByLesson,
       ]),
     ),
 

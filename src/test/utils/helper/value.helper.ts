@@ -454,3 +454,19 @@ export function generateRandomInvalidIDStrings(
     ...generateRandomMixStrings(24, 24, minCount, maxCount),
   ];
 }
+
+function generateRandomInteger(minInt: number, maxInt: number): number {
+  return Math.floor(Math.random() * (maxInt - minInt + 1)) + minInt;
+}
+export function generateRandomIntegers(
+  minInt: number,
+  maxInt: number,
+  minCount: number = 50,
+  maxCount: number = 100,
+): number[] {
+  const count =
+    Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+  return Array.from({ length: count }, () => {
+    return generateRandomInteger(minInt, maxInt);
+  });
+}

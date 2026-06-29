@@ -1,6 +1,9 @@
 import { assertCourseCreator } from "../../auth/assertCourseCreator.auth.js";
 import { assertLessonCreator } from "../../auth/assertLessonCreator.auth.js";
-import { assertStudentEnrolled } from "../../auth/assertStudentEnrolled.auth.js";
+import {
+  assertStudentEnrolledByCourse,
+  assertStudentEnrolledByLesson,
+} from "../../auth/assertStudentEnrolled.auth.js";
 import {
   createCourseByAdmin,
   createCourseByInstructor,
@@ -26,7 +29,7 @@ export const lessonResolver = {
     lesson: errorHandler(
       withAuthorization(withRole(getLessonById), [
         assertLessonCreator,
-        assertStudentEnrolled,
+        assertStudentEnrolledByLesson,
       ]),
     ),
     lessonOTP: errorHandler(
@@ -37,7 +40,7 @@ export const lessonResolver = {
     lessons: errorHandler(
       withAuthorization(withRole(getAllLessons), [
         assertCourseCreator,
-        assertStudentEnrolled,
+        assertStudentEnrolledByCourse,
       ]),
     ),
   },
