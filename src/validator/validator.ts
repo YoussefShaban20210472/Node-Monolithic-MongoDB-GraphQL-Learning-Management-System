@@ -109,6 +109,21 @@ export function getArrayZObject(
     .min(minE, `You have to add at least ${minE} ${name}`)
     .max(maxE, `You can add at most ${maxE} ${name}`);
 }
+export function getArrayMongoDbIdZObject(
+  name: string,
+  min: number = 1,
+  max: number = 99999999,
+) {
+  return z
+    .array(getMongoDbIdZObject(name), {
+      error: (issue) =>
+        issue.input === undefined
+          ? `${name} is required`
+          : `${name} must be array`,
+    })
+    .min(min, `You have to add at least ${min} ${name}`)
+    .max(max, `You can add at most ${max} ${name}`);
+}
 
 export function checkTimeNow(time: string) {
   const date = new Date(time);

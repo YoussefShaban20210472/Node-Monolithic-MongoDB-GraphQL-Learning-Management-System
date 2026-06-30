@@ -43,11 +43,7 @@ export const GET_QUESTION_BANK_BY_ID = `
         }
       }
     `;
-export const GET_QUESTION_BANK_OTP_BY_ID = `
-      query GetQuestionBankOTP($input: _IdInput!) {
-        questionBankOTP(input:$input)
-      }
-    `;
+
 export const UPDATE_QUESTION_BANK_BY_ID = `
       mutation UpdateQuestionBankById($input: UpdateQuestionBankByIdInput!) {
         updateQuestionBankById(input: $input)

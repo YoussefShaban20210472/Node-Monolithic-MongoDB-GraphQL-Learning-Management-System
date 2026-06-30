@@ -1,4 +1,4 @@
-import { assertCourseCreator } from "../../auth/assertCourseCreator.auth.js";
+import { assertInstructorCreatorByCourse } from "../../auth/assertInstructorCreator.auth.js";
 import {
   deleteEnrollmentByAdmin,
   deleteEnrollmentByStudent,
@@ -47,7 +47,7 @@ export const enrollmentResolver = {
         withMiddleware(withRole(updateEnrollment, ["ADMIN", "INSTRUCTOR"]), [
           assertStudentId,
         ]),
-        [assertCourseCreator],
+        [assertInstructorCreatorByCourse],
       ),
     ),
   },

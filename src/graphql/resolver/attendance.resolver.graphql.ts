@@ -1,5 +1,4 @@
-import { assertCourseCreator } from "../../auth/assertCourseCreator.auth.js";
-import { assertLessonCreator } from "../../auth/assertLessonCreator.auth.js";
+import { assertInstructorCreatorByLesson } from "../../auth/assertInstructorCreator.auth.js";
 import { assertStudentEnrolledByLesson } from "../../auth/assertStudentEnrolled.auth.js";
 import {
   attendStudentByAdmin,
@@ -8,22 +7,6 @@ import {
   getAttendance,
   getAttendanceByStudent,
 } from "../../controller/attendance.controller.js";
-import {
-  createCourseByAdmin,
-  createCourseByInstructor,
-  deleteCourseById,
-  getAllCourses,
-  getCourseById,
-  updateCourseById,
-} from "../../controller/course.controller.js";
-import {
-  createLesson,
-  deleteLessonById,
-  getAllLessons,
-  getLessonById,
-  getLessonOTPById,
-  updateLessonById,
-} from "../../controller/lesson.controller.js";
 import { assertStudentId } from "../../middleware/assertStudentId.middleware.js";
 import { withAuthorization } from "../auth/withAuthorization.auth.graphql.js";
 import { withRole } from "../auth/withRole.auth.graphql.js";
@@ -42,7 +25,7 @@ export const attendanceResolver = {
         withMiddleware(withRole(getAttendance, ["ADMIN", "INSTRUCTOR"]), [
           assertStudentId,
         ]),
-        [assertLessonCreator],
+        [assertInstructorCreatorByLesson],
       ),
     ),
     lessonAttendances: errorHandler(
@@ -51,7 +34,7 @@ export const attendanceResolver = {
           withRole(getAllLessonAttendances, ["ADMIN", "INSTRUCTOR"]),
           [],
         ),
-        [assertLessonCreator],
+        [assertInstructorCreatorByLesson],
       ),
     ),
   },

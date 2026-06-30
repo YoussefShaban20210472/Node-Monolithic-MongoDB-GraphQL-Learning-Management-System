@@ -14,6 +14,7 @@ import {
   isInstructorIsLessonCreator,
 } from "../service/lesson.service.js";
 import { getQuestionBankById } from "../service/questionBank.service.js";
+import { getQuizById } from "../service/quiz.service.js";
 
 export async function assertStudentEnrolledByCourse(
   args: CourseIdArgs,
@@ -82,6 +83,22 @@ export async function assertStudentEnrolledByQuestionBank(
   let _id: string = "";
   if ("_id" in args.input) {
     _id = (await getQuestionBankById(args.input._id)).courseId.toString();
+  }
+  const isEnrolled = await isStudentIsCourseEnrolled(studentId, _id);
+  if (!isEnrolled) {
+    throw new Unauthorized();
+  }
+}
+export async function assertStudentEnrolledByQuiz(
+  args: IdArgs,
+  context: Context,
+) {
+  const role = context.req.session.role;
+  if (role != "STUDENT") return;
+  const studentId = context.req.session.userId!;
+  let _id: string = "";
+  if ("_id" in args.input) {
+    _id = (await getQuizById(args.input._id)).courseId.toString();
   }
   const isEnrolled = await isStudentIsCourseEnrolled(studentId, _id);
   if (!isEnrolled) {

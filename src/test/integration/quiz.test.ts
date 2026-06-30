@@ -20,26 +20,23 @@ import {
   createRandomCourseAndGetId,
 } from "../utils/helper/course.helper.js";
 import {
-  CREATE_ASSIGNMENT,
-  DELETE_ASSIGNMENT_BY_ID,
-  GET_ALL_ASSIGNMENTS,
-  GET_ASSIGNMENT_BY_ID,
-  UPDATE_ASSIGNMENT_BY_ID,
-} from "../graphql/operation/assignment.operation.graphql.js";
-import { createRandomAssignment } from "../utils/factory/assignment.factory.js";
+  CREATE_QUIZ,
+  DELETE_QUIZ_BY_ID,
+  GET_ALL_QUIZZES,
+  GET_QUIZ_BY_ID,
+  UPDATE_QUIZ_BY_ID,
+} from "../graphql/operation/quiz.operation.graphql.js";
+import { createRandomQuiz } from "../utils/factory/quiz.factory.js";
 import {
-  requiredAssignmentFields,
-  updateAssignmentFields,
-} from "../graphql/fixture/assignment.fixture.graphql.js";
-import { courseEndDate } from "../utils/date-builder.js";
+  requiredQuizFields,
+  updateQuizFields,
+} from "../graphql/fixture/quiz.fixture.graphql.js";
 import {
-  createAssignmentAndGetId,
-  createRandomAssignmentAndGetId,
-} from "../utils/helper/assignment.helper.js";
-import {
-  enrollStudent,
-  enrollStudentAndAccept,
-} from "../utils/helper/enrollment.helper.js";
+  createQuizAndGetId,
+  createRandomQuizAndGetId,
+} from "../utils/helper/quiz.helper.js";
+import { enrollStudentAndAccept } from "../utils/helper/enrollment.helper.js";
+import { createRandomQuestionBanksAndGetIds } from "../utils/helper/questionBank.helper.js";
 
 let adminCookie: string;
 let instructorCookie: string;
@@ -50,9 +47,10 @@ let instructorId: string;
 let studentId: string;
 let dumyId: string = "6a32819b438924494803bf97";
 let course = createRandomCourse();
-let assignment = createRandomAssignment();
+let quiz = createRandomQuiz([], "");
 let courseId: string;
-let assignmentId: string;
+let quizId: string;
+let questionBankIds: string[];
 const idField = [{ name: "_id", domain: "ID" }] as const;
 
 beforeAll(async () => {
@@ -71,8 +69,12 @@ beforeAll(async () => {
   );
   courseId = await createCourseAndGetId(course, instructorCookie);
   await enrollStudentAndAccept(studentId, courseId, adminCookie);
-  assignment = createRandomAssignment(courseId);
-  assignmentId = await createAssignmentAndGetId(assignment, adminCookie);
+  questionBankIds = await createRandomQuestionBanksAndGetIds(
+    courseId,
+    adminCookie,
+  );
+  quiz = createRandomQuiz(questionBankIds, courseId);
+  quizId = await createQuizAndGetId(quiz, adminCookie);
 });
 const roles = [
   { type: "ADMIN", getCookie: () => adminCookie },
@@ -85,24 +87,22 @@ const invalidAuthorizationSecinaros = [
     getCookie: () => randomInstructorCookie,
   },
 ];
-describe("Testing create assignment", () => {
-  const schema = CREATE_ASSIGNMENT;
+describe("Testing create quiz", () => {
+  const schema = CREATE_QUIZ;
   describe("Positive", () => {
     roles.forEach((role) => {
-      it(`Should ${role.type} creates a new assignment`, async () => {
-        const assignment = createRandomAssignment(courseId);
+      it(`Should ${role.type} creates a new quiz`, async () => {
+        const quiz = createRandomQuiz(questionBankIds, courseId);
         const additionalTests = [
           (response: Response) => {
-            expect(response.body.data.createAssignment).toMatchObject(
-              assignment,
-            );
+            expect(response.body.data.createQuiz).toMatchObject(quiz);
           },
           (response: Response) => {
-            expect(response.body.data.createAssignment._id).toBeDefined();
+            expect(response.body.data.createQuiz._id).toBeDefined();
           },
         ];
         await test(
-          assignment,
+          quiz,
           role.getCookie(),
           schema,
           200,
@@ -117,37 +117,54 @@ describe("Testing create assignment", () => {
   describe("Negative", () => {
     testCommon(
       schema,
-      () => createRandomAssignment(courseId),
+      () => createRandomQuiz(questionBankIds, courseId),
       invalidAuthorizationSecinaros,
-      requiredAssignmentFields,
+      requiredQuizFields,
       roles,
-      [],
+      ["courseId"],
       { duration: true },
       "Object",
     );
+    describe("Should return Object Not found if a question id is not found", () => {
+      roles.forEach((role) => {
+        it(`Should return Object Not found if a question id is not found ${role.type}`, async () => {
+          const quiz = createRandomQuiz([...questionBankIds, dumyId], courseId);
+          await test(
+            quiz,
+            role.getCookie(),
+            schema,
+            200,
+            "defined",
+            "null",
+            [],
+          );
+        });
+      });
+    });
   });
 });
 
-describe("Testing delete assignment by id", () => {
-  const schema = DELETE_ASSIGNMENT_BY_ID;
+describe("Testing delete quiz by id", () => {
+  const schema = DELETE_QUIZ_BY_ID;
   describe("Positive", () => {
-    let assignmentId: string;
+    let quizId: string;
     beforeEach(async () => {
-      assignmentId = await createRandomAssignmentAndGetId(
+      quizId = await createRandomQuizAndGetId(
         courseId,
+        questionBankIds,
         adminCookie,
       );
     });
 
     roles.forEach((role) => {
-      it(`Should ${role.type} deletes a assignment by id`, async () => {
+      it(`Should ${role.type} deletes a quiz by id`, async () => {
         const additionalTests = [
           (response: Response) => {
-            expect(response.body.data.deleteAssignmentById).toBe(true);
+            expect(response.body.data.deleteQuizById).toBe(true);
           },
         ];
         await test(
-          { _id: assignmentId },
+          { _id: quizId },
           role.getCookie(),
           schema,
           200,
@@ -162,7 +179,7 @@ describe("Testing delete assignment by id", () => {
   describe("Negative", () => {
     testCommon(
       schema,
-      () => ({ _id: assignmentId }),
+      () => ({ _id: quizId }),
       invalidAuthorizationSecinaros,
       idField,
       roles,
@@ -171,8 +188,8 @@ describe("Testing delete assignment by id", () => {
   });
 });
 
-describe("Testing get all assignments", () => {
-  const schema = GET_ALL_ASSIGNMENTS;
+describe("Testing get all quizs", () => {
+  const schema = GET_ALL_QUIZZES;
   const roles = [
     { type: "ADMIN", getCookie: () => adminCookie },
     { type: "INSTRUCTOR", getCookie: () => instructorCookie },
@@ -180,23 +197,21 @@ describe("Testing get all assignments", () => {
   ];
   describe("Positive", () => {
     roles.forEach((role) => {
-      it(`Should ${role.type} get all assignments`, async () => {
+      it(`Should ${role.type} get all quizzes`, async () => {
         const additionalTests = [
           (response: Response) => {
-            expect(
-              response.body.data.assignments.length,
-            ).toBeGreaterThanOrEqual(1);
+            expect(response.body.data.quizzes.length).toBeGreaterThanOrEqual(1);
           },
           (response: Response) => {
-            const objects = response.body.data.assignments;
+            const objects = response.body.data.quizzes;
             for (let object of objects) {
               expect(object._id).toBeDefined();
               expect(object.courseId).toBeDefined();
               expect(object.title).toBeDefined();
               expect(object.description).toBeDefined();
-              expect(object.score).toBeDefined();
               expect(object.startDate).toBeDefined();
               expect(object.endDate).toBeDefined();
+              expect(object.questionIds).toBeDefined();
               expect(object.instructorId).toBeUndefined();
             }
           },
@@ -241,7 +256,7 @@ describe("Testing get all assignments", () => {
         it(`Should ${role.type} gets [] for a new course`, async () => {
           const additionalTests = [
             (response: Response) => {
-              expect(response.body.data.assignments.length).toBe(0);
+              expect(response.body.data.quizzes.length).toBe(0);
             },
           ];
           await test(
@@ -259,21 +274,21 @@ describe("Testing get all assignments", () => {
   });
 });
 
-describe("Testing get assignment by id", () => {
-  const schema = GET_ASSIGNMENT_BY_ID;
+describe("Testing get quiz by id", () => {
+  const schema = GET_QUIZ_BY_ID;
   describe("Positive", () => {
     roles.forEach((role) => {
-      it(`Should ${role.type} gets assignment by id`, async () => {
+      it(`Should ${role.type} gets quiz by id`, async () => {
         const additionalTests = [
           (response: Response) => {
-            expect(response.body.data.assignment).toMatchObject(assignment);
+            expect(response.body.data.quiz).toMatchObject(quiz);
           },
           (response: Response) => {
-            expect(response.body.data.assignment._id).toBeDefined();
+            expect(response.body.data.quiz._id).toBeDefined();
           },
         ];
         await test(
-          { _id: assignmentId },
+          { _id: quizId },
           role.getCookie(),
           schema,
           200,
@@ -295,7 +310,7 @@ describe("Testing get assignment by id", () => {
     ];
     testCommon(
       schema,
-      () => ({ _id: assignmentId }),
+      () => ({ _id: quizId }),
       invalidAuthorizationSecinaros,
       idField,
       roles,
@@ -304,29 +319,30 @@ describe("Testing get assignment by id", () => {
   });
 });
 
-describe("Testing update assignment by id", () => {
-  const schema = UPDATE_ASSIGNMENT_BY_ID;
+describe("Testing update quiz by id", () => {
+  const schema = UPDATE_QUIZ_BY_ID;
   describe("Positive", () => {
     const additionalTests = [
       (response: Response) => {
-        expect(response.body.data.updateAssignmentById).toBe(true);
+        expect(response.body.data.updateQuizById).toBe(true);
       },
     ];
     describe("Update many fields", () => {
-      let assignmentId: string;
+      let quizId: string;
       beforeEach(async () => {
-        assignmentId = await createRandomAssignmentAndGetId(
+        quizId = await createRandomQuizAndGetId(
           courseId,
+          questionBankIds,
           adminCookie,
         );
       });
       roles.forEach((role) => {
-        it(`Should ${role.type} updates all assignments fields`, async () => {
-          const newassignment = createRandomAssignment();
-          delete newassignment.courseId;
+        it(`Should ${role.type} updates all quiz fields`, async () => {
+          const newquiz = createRandomQuiz(questionBankIds, courseId);
+          delete newquiz.courseId;
           const input = {
-            _id: assignmentId,
-            ...newassignment,
+            _id: quizId,
+            ...newquiz,
           };
           await test(
             input,
@@ -341,21 +357,23 @@ describe("Testing update assignment by id", () => {
       });
     });
     describe("Update one field", () => {
-      let assignmentId: string;
+      let quizId: string;
       beforeAll(async () => {
-        assignmentId = await createRandomAssignmentAndGetId(
+        quizId = await createRandomQuizAndGetId(
           courseId,
+          questionBankIds,
           adminCookie,
         );
       });
       roles.forEach((role) => {
-        const newassignment = createRandomAssignment();
-        delete newassignment.courseId;
-        updateAssignmentFields.forEach((field) => {
-          it(`Should ${role.type} updates only one course field (${field.name})`, async () => {
+        const newquiz = createRandomQuiz(questionBankIds, courseId);
+        delete newquiz.courseId;
+        updateQuizFields.forEach((field) => {
+          it(`Should ${role.type} updates only one quiz field (${field.name})`, async () => {
+            newquiz.questionIds = questionBankIds;
             const input = {
-              _id: assignmentId,
-              [field.name]: newassignment[field.name],
+              _id: quizId,
+              [field.name]: newquiz[field.name],
             };
             await test(
               input,
@@ -374,12 +392,12 @@ describe("Testing update assignment by id", () => {
 
   describe("Negative", () => {
     const requiredFields = [
-      ...updateAssignmentFields,
+      ...updateQuizFields,
       { name: "_id", domain: "ID" },
     ] as const;
     testCommon(
       schema,
-      () => ({ _id: assignmentId }),
+      () => ({ _id: quizId }),
       invalidAuthorizationSecinaros,
       requiredFields,
       roles,
@@ -387,5 +405,20 @@ describe("Testing update assignment by id", () => {
       { allowMissing: true, duration: true },
       "Object",
     );
+    describe("Should return Object Not found if a question id is not found", () => {
+      roles.forEach((role) => {
+        it(`Should return Object Not found if a question id is not found ${role.type}`, async () => {
+          await test(
+            { _id: quizId, questionIds: [...questionBankIds, dumyId] },
+            role.getCookie(),
+            schema,
+            200,
+            "defined",
+            "null",
+            [],
+          );
+        });
+      });
+    });
   });
 });

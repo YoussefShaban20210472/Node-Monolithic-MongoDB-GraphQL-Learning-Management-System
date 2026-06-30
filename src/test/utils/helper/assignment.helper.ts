@@ -1,8 +1,5 @@
 import { graphqlRequest } from "../graphql-client.js";
-import {
-  CREATE_ASSIGNMENT,
-  GET_ASSIGNMENT_OTP_BY_ID,
-} from "../../graphql/operation/assignment.operation.graphql.js";
+import { CREATE_ASSIGNMENT } from "../../graphql/operation/assignment.operation.graphql.js";
 import { createRandomAssignment } from "../factory/assignment.factory.js";
 
 export async function createAssignmentAndGetId(
@@ -25,19 +22,4 @@ export async function createRandomAssignmentAndGetId(
 ) {
   const assignment = createRandomAssignment(courseId);
   return await createAssignmentAndGetId(assignment, adminCookie);
-}
-
-export async function getAssignmentOTPById(
-  assignmentId: string,
-  adminCookie: string,
-) {
-  const response = await graphqlRequest()
-    .set("Cookie", adminCookie)
-    .send({
-      query: GET_ASSIGNMENT_OTP_BY_ID,
-      variables: {
-        input: { _id: assignmentId },
-      },
-    });
-  return response.body.data.assignmentOTP;
 }

@@ -470,3 +470,14 @@ export function generateRandomIntegers(
     return generateRandomInteger(minInt, maxInt);
   });
 }
+
+export function generateRandomInvalidIDArrayStrings(
+  minCount: number = 20,
+  maxCount: number = 40,
+): string[][] {
+  const count =
+    Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+  return Array.from({ length: count }, () => {
+    return generateRandomInvalidIDStrings();
+  });
+}

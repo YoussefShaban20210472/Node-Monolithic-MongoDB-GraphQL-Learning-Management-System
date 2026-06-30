@@ -1,4 +1,4 @@
-import { assertCourseCreator } from "../../auth/assertCourseCreator.auth.js";
+import { assertInstructorCreatorByCourse } from "../../auth/assertInstructorCreator.auth.js";
 import {
   createCourseByAdmin,
   createCourseByInstructor,
@@ -14,7 +14,9 @@ import { errorHandler } from "../error/errorHandler.error.graphql.js";
 export const courseResolver = {
   Query: {
     course: errorHandler(
-      withAuthorization(withRole(getCourseById), [assertCourseCreator]),
+      withAuthorization(withRole(getCourseById), [
+        assertInstructorCreatorByCourse,
+      ]),
     ),
     courses: errorHandler(withRole(getAllCourses)),
   },
@@ -26,12 +28,12 @@ export const courseResolver = {
     createCourseByAdmin: errorHandler(withRole(createCourseByAdmin, ["ADMIN"])),
     deleteCourseById: errorHandler(
       withAuthorization(withRole(deleteCourseById, ["ADMIN", "INSTRUCTOR"]), [
-        assertCourseCreator,
+        assertInstructorCreatorByCourse,
       ]),
     ),
     updateCourseById: errorHandler(
       withAuthorization(withRole(updateCourseById, ["ADMIN", "INSTRUCTOR"]), [
-        assertCourseCreator,
+        assertInstructorCreatorByCourse,
       ]),
     ),
   },

@@ -7,6 +7,7 @@ import {
   generateRandomInvalidDateStrings,
   generateRandomInvalidEmailStrings,
   generateRandomInvalidEnumStrings,
+  generateRandomInvalidIDArrayStrings,
   generateRandomInvalidIDStrings,
   generateRandomInvalidPasswordAbove8Strings,
   generateRandomInvalidPasswordUnder8Strings,
@@ -116,4 +117,5 @@ export const invalidGraphQLDomains = {
     ...generateRandomInvalidStringArrayStrings(1, 255),
     generateRandomAlphabetStrings(1, 255, 6, 100),
   ],
+  IDArray: [...generateRandomInvalidIDArrayStrings()],
 };

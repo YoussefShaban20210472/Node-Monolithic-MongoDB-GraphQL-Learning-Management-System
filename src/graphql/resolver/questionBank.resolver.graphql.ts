@@ -1,5 +1,7 @@
-import { assertCourseCreator } from "../../auth/assertCourseCreator.auth.js";
-import { assertQuestionBankCreator } from "../../auth/assertQuestionBankCreator.auth.js";
+import {
+  assertInstructorCreatorByCourse,
+  assertInstructorCreatorByQuestionBank,
+} from "../../auth/assertInstructorCreator.auth.js";
 import {
   assertStudentEnrolledByCourse,
   assertStudentEnrolledByQuestionBank,
@@ -21,13 +23,13 @@ export const questionBankResolver = {
   Query: {
     questionBank: errorHandler(
       withAuthorization(withRole(getQuestionBankById), [
-        assertQuestionBankCreator,
+        assertInstructorCreatorByQuestionBank,
         assertStudentEnrolledByQuestionBank,
       ]),
     ),
     allQuestionBank: errorHandler(
       withAuthorization(withRole(getAllQuestionBank), [
-        assertCourseCreator,
+        assertInstructorCreatorByCourse,
         assertStudentEnrolledByCourse,
       ]),
     ),
@@ -36,19 +38,19 @@ export const questionBankResolver = {
   Mutation: {
     createQuestionBank: errorHandler(
       withAuthorization(withRole(createQuestionBank, ["ADMIN", "INSTRUCTOR"]), [
-        assertCourseCreator,
+        assertInstructorCreatorByCourse,
       ]),
     ),
     deleteQuestionBankById: errorHandler(
       withAuthorization(
         withRole(deleteQuestionBankById, ["ADMIN", "INSTRUCTOR"]),
-        [assertQuestionBankCreator],
+        [assertInstructorCreatorByQuestionBank],
       ),
     ),
     updateQuestionBankById: errorHandler(
       withAuthorization(
         withRole(updateQuestionBankById, ["ADMIN", "INSTRUCTOR"]),
-        [assertQuestionBankCreator],
+        [assertInstructorCreatorByQuestionBank],
       ),
     ),
   },

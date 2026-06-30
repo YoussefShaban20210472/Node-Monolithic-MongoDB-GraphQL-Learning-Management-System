@@ -24,7 +24,6 @@ import {
   DELETE_QUESTION_BANK_BY_ID,
   GET_ALL_QUESTION_BANK,
   GET_QUESTION_BANK_BY_ID,
-  GET_QUESTION_BANK_OTP_BY_ID,
   UPDATE_QUESTION_BANK_BY_ID,
 } from "../graphql/operation/questionBank.operation.graphql.js";
 import { createRandomQuestionBank } from "../utils/factory/questionBank.factory.js";
@@ -32,12 +31,8 @@ import {
   requiredQuestionBankFields,
   updateQuestionBankFields,
 } from "../graphql/fixture/questionBank.fixture.graphql.js";
-import { courseEndDate } from "../utils/date-builder.js";
 
-import {
-  enrollStudent,
-  enrollStudentAndAccept,
-} from "../utils/helper/enrollment.helper.js";
+import { enrollStudentAndAccept } from "../utils/helper/enrollment.helper.js";
 import {
   createQuestionBankAndGetId,
   createRandomQuestionBankAndGetId,

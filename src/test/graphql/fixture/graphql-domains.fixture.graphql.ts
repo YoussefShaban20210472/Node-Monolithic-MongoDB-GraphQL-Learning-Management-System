@@ -18,4 +18,5 @@ export type graphqlDomains = keyof {
   Answer: string[];
   QuestionType: string[];
   Choice: string[][];
+  IDArray: string[][];
 };

@@ -43,6 +43,9 @@ export const courseSchema: string = `#graphql
         tags: [String!]
         categories: [String!]
     }    
+    input CourseIdInput {
+        courseId: String!
+    }
     type Query {
         course(input: _IdInput!):Course!
         courses:[Course!]!

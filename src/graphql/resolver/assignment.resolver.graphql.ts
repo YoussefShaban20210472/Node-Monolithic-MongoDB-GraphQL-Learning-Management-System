@@ -1,13 +1,3 @@
-import { assertCourseCreator } from "../../auth/assertCourseCreator.auth.js";
-import { assertAssignmentCreator } from "../../auth/assertAssignmentCreator.auth.js";
-import {
-  createCourseByAdmin,
-  createCourseByInstructor,
-  deleteCourseById,
-  getAllCourses,
-  getCourseById,
-  updateCourseById,
-} from "../../controller/course.controller.js";
 import {
   createAssignment,
   deleteAssignmentById,
@@ -22,18 +12,22 @@ import {
   assertStudentEnrolledByAssignment,
   assertStudentEnrolledByCourse,
 } from "../../auth/assertStudentEnrolled.auth.js";
+import {
+  assertInstructorCreatorByAssignment,
+  assertInstructorCreatorByCourse,
+} from "../../auth/assertInstructorCreator.auth.js";
 
 export const assignmentResolver = {
   Query: {
     assignment: errorHandler(
       withAuthorization(withRole(getAssignmentById), [
-        assertAssignmentCreator,
+        assertInstructorCreatorByAssignment,
         assertStudentEnrolledByAssignment,
       ]),
     ),
     assignments: errorHandler(
       withAuthorization(withRole(getAllAssignments), [
-        assertCourseCreator,
+        assertInstructorCreatorByCourse,
         assertStudentEnrolledByCourse,
       ]),
     ),
@@ -42,19 +36,19 @@ export const assignmentResolver = {
   Mutation: {
     createAssignment: errorHandler(
       withAuthorization(withRole(createAssignment, ["ADMIN", "INSTRUCTOR"]), [
-        assertCourseCreator,
+        assertInstructorCreatorByCourse,
       ]),
     ),
     deleteAssignmentById: errorHandler(
       withAuthorization(
         withRole(deleteAssignmentById, ["ADMIN", "INSTRUCTOR"]),
-        [assertAssignmentCreator],
+        [assertInstructorCreatorByAssignment],
       ),
     ),
     updateAssignmentById: errorHandler(
       withAuthorization(
         withRole(updateAssignmentById, ["ADMIN", "INSTRUCTOR"]),
-        [assertAssignmentCreator],
+        [assertInstructorCreatorByAssignment],
       ),
     ),
   },

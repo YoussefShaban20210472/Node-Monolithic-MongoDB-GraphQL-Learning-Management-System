@@ -1,10 +1,10 @@
-export const lessonSchema: string = `#graphql
+export const quizSchema: string = `#graphql
     
-    type Lesson {
+    type Quiz {
         _id: String!
         title: String!
         description: String!
-        otp: String
+        questionIds: [String!]!
         instructorId: String
         courseId: String!
         startDate: String!
@@ -13,30 +13,30 @@ export const lessonSchema: string = `#graphql
         updatedAt: String!
     }
 
-    input CreateLessonInput {
+    input CreateQuizInput {
         courseId: String!
         title: String!
         description: String!
         startDate: String!
         endDate: String!
+        questionIds: [String!]!
     }    
-    input UpdateLessonByIdInput {
+    input UpdateQuizByIdInput {
         _id: String!
         title: String
         description: String
         startDate: String
         endDate: String
+        questionIds: [String!]
     }  
-  
     type Query {
-        lesson(input:_IdInput!):Lesson!
-        lessonOTP(input:_IdInput!):String!
-        lessons(input:CourseIdInput!):[Lesson!]!
+        quiz(input:_IdInput!):Quiz!
+        quizzes(input:CourseIdInput!):[Quiz!]!
     }
 
     type Mutation {
-        createLesson(input: CreateLessonInput!): Lesson!
-        deleteLessonById(input: _IdInput!): Boolean!
-        updateLessonById(input: UpdateLessonByIdInput!): Boolean!
+        createQuiz(input: CreateQuizInput!): Quiz!
+        deleteQuizById(input: _IdInput!): Boolean!
+        updateQuizById(input: UpdateQuizByIdInput!): Boolean!
     }
 `;

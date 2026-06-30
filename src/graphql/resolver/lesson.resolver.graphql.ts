@@ -1,17 +1,12 @@
-import { assertCourseCreator } from "../../auth/assertCourseCreator.auth.js";
-import { assertLessonCreator } from "../../auth/assertLessonCreator.auth.js";
+import {
+  assertInstructorCreatorByCourse,
+  assertInstructorCreatorByLesson,
+} from "../../auth/assertInstructorCreator.auth.js";
 import {
   assertStudentEnrolledByCourse,
   assertStudentEnrolledByLesson,
 } from "../../auth/assertStudentEnrolled.auth.js";
-import {
-  createCourseByAdmin,
-  createCourseByInstructor,
-  deleteCourseById,
-  getAllCourses,
-  getCourseById,
-  updateCourseById,
-} from "../../controller/course.controller.js";
+
 import {
   createLesson,
   deleteLessonById,
@@ -28,18 +23,18 @@ export const lessonResolver = {
   Query: {
     lesson: errorHandler(
       withAuthorization(withRole(getLessonById), [
-        assertLessonCreator,
+        assertInstructorCreatorByLesson,
         assertStudentEnrolledByLesson,
       ]),
     ),
     lessonOTP: errorHandler(
       withAuthorization(withRole(getLessonOTPById, ["ADMIN", "INSTRUCTOR"]), [
-        assertLessonCreator,
+        assertInstructorCreatorByLesson,
       ]),
     ),
     lessons: errorHandler(
       withAuthorization(withRole(getAllLessons), [
-        assertCourseCreator,
+        assertInstructorCreatorByCourse,
         assertStudentEnrolledByCourse,
       ]),
     ),
@@ -48,17 +43,17 @@ export const lessonResolver = {
   Mutation: {
     createLesson: errorHandler(
       withAuthorization(withRole(createLesson, ["ADMIN", "INSTRUCTOR"]), [
-        assertCourseCreator,
+        assertInstructorCreatorByCourse,
       ]),
     ),
     deleteLessonById: errorHandler(
       withAuthorization(withRole(deleteLessonById, ["ADMIN", "INSTRUCTOR"]), [
-        assertLessonCreator,
+        assertInstructorCreatorByLesson,
       ]),
     ),
     updateLessonById: errorHandler(
       withAuthorization(withRole(updateLessonById, ["ADMIN", "INSTRUCTOR"]), [
-        assertLessonCreator,
+        assertInstructorCreatorByLesson,
       ]),
     ),
   },

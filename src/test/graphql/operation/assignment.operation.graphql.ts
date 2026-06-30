@@ -43,11 +43,7 @@ export const GET_ASSIGNMENT_BY_ID = `
         }
       }
     `;
-export const GET_ASSIGNMENT_OTP_BY_ID = `
-      query GetAssignmentOTP($input: _IdInput!) {
-        assignmentOTP(input:$input)
-      }
-    `;
+
 export const UPDATE_ASSIGNMENT_BY_ID = `
       mutation UpdateAssignmentById($input: UpdateAssignmentByIdInput!) {
         updateAssignmentById(input: $input)

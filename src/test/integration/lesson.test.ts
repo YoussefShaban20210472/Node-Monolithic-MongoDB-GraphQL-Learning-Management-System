@@ -8,26 +8,13 @@ import {
   adminLogin,
   instructorLogin,
   studentLogin,
-  updateUserFields,
 } from "../graphql/fixture/user.fixture.graphql.js";
 
-import {
-  testAuthenication,
-  testAuthorization,
-} from "./shared/auth-test.shared.js";
-import { testBusniess } from "./shared/busniess-test.shared.js";
+
 import { test, testCommon } from "./shared/common-test.shared.js";
 import { Response } from "supertest";
-import {
-  CREATE_COURSE_BY_ADMIN,
-  CREATE_COURSE_BY_INSTRUCTOR,
-  DELETE_COURSE_BY_ID,
-  GET_ALL_COURSES,
-  GET_COURSE_BY_ID,
-  UPDATE_COURSE_BY_ID,
-} from "../graphql/operation/course.operation.graphql.js";
+
 import { createRandomCourse } from "../utils/factory/course.factory.js";
-import { requiredCourseFields } from "../graphql/fixture/course.fixture.graphql.js";
 
 import {
   createCourseAndGetId,
