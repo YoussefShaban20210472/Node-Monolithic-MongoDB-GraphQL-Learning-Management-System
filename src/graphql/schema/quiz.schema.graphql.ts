@@ -28,6 +28,9 @@ export const quizSchema: string = `#graphql
         startDate: String
         endDate: String
         questionIds: [String!]
+    }      
+    input QuizIdInput {
+        quizId: String!
     }  
     type Query {
         quiz(input:_IdInput!):Quiz!

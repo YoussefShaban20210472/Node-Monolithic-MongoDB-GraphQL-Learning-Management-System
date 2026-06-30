@@ -33,3 +33,7 @@ export const updateQuizSchema = z
     questionIds: getArrayMongoDbIdZObject("questionIds", 1, 10000).optional(),
   })
   .superRefine((data, ctx) => checkDuration(data, ctx, "minutes"));
+
+export const quizIdSchema = z.object({
+  quizId: getMongoDbIdZObject("quizId"),
+});

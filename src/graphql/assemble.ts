@@ -16,6 +16,8 @@ import { questionBankSchema } from "./schema/questionBank.schema.graphql.js";
 import { questionBankResolver } from "./resolver/questionBank.resolver.graphql.js";
 import { quizSchema } from "./schema/quiz.schema.graphql.js";
 import { quizResolver } from "./resolver/quiz.resolver.graphql.js";
+import { quizAttemptSchema } from "./schema/quizAttempt.schema.graphql.js";
+import { quizAttemptResolver } from "./resolver/quizAttempt.resolver.graphql.js";
 
 export const typeDefs = [
   userSchema,
@@ -27,6 +29,7 @@ export const typeDefs = [
   assignmentSchema,
   questionBankSchema,
   quizSchema,
+  quizAttemptSchema,
 ];
 export const resolvers = [
   userResolver,
@@ -38,4 +41,5 @@ export const resolvers = [
   assignmentResolver,
   questionBankResolver,
   quizResolver,
+  quizAttemptResolver,
 ];

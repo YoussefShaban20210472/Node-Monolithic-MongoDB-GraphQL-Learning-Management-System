@@ -16,6 +16,7 @@ import { isInstructorIsCourseCreator } from "../service/course.service.js";
 import { isInstructorIsLessonCreator } from "../service/lesson.service.js";
 import { isInstructorIsQuestionBankCreator } from "../service/questionBank.service.js";
 import { isInstructorIsQuizCreator } from "../service/quiz.service.js";
+import { QuizIdArgs } from "../graphql/interface/quiz.interface.graphql.js";
 
 export async function assertInstructorCreatorByCourse(
   args: IdArgs | UpdateEnrollmentArgs | CreateLessonArgs | CourseIdArgs,
@@ -89,7 +90,7 @@ export async function assertInstructorCreatorByQuestionBank(
   }
 }
 export async function assertInstructorCreatorByQuiz(
-  args: IdArgs,
+  args: IdArgs | QuizIdArgs,
   context: Context,
 ) {
   const role = context.req.session.role;
@@ -98,6 +99,8 @@ export async function assertInstructorCreatorByQuiz(
   let _id: string = "";
   if ("_id" in args.input) {
     _id = args.input._id;
+  } else if ("quizId" in args.input) {
+    _id = args.input.quizId;
   }
   const isCreator = await isInstructorIsQuizCreator(instructorId, _id);
   if (!isCreator) {

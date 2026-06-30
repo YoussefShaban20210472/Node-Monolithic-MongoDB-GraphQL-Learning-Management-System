@@ -9,10 +9,15 @@ import {
 } from "../graphql/interface/attendance.interface.graphql.js";
 import { EnrollmentArgs } from "../graphql/interface/enrollment.interface.graphql.js";
 import { Context, IdArgs } from "../graphql/interface/interface.graphql.js";
+import { GetQuizAttemptArgs } from "../graphql/interface/quizAttempt.interface.graphql.js";
 import { isUserIdHasCorrectRole } from "../service/user.service.js";
 
 export async function assertStudentId(
-  args: EnrollmentArgs | AttendStudentByAdminArgs | GetAttendanceArgs,
+  args:
+    | EnrollmentArgs
+    | AttendStudentByAdminArgs
+    | GetAttendanceArgs
+    | GetQuizAttemptArgs,
   context: Context,
 ) {
   const role = context.req.session.role;

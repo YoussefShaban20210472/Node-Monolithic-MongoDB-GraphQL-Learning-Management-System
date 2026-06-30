@@ -7,6 +7,7 @@ import {
   IdArgs,
 } from "../graphql/interface/interface.graphql.js";
 import { LessonIdArgs } from "../graphql/interface/lesson.interface.graphql.js";
+import { QuizIdArgs } from "../graphql/interface/quiz.interface.graphql.js";
 import { getAssignmentById } from "../service/assignment.service.js";
 import { isStudentIsCourseEnrolled } from "../service/enrollment.service.js";
 import {
@@ -90,7 +91,7 @@ export async function assertStudentEnrolledByQuestionBank(
   }
 }
 export async function assertStudentEnrolledByQuiz(
-  args: IdArgs,
+  args: IdArgs | QuizIdArgs,
   context: Context,
 ) {
   const role = context.req.session.role;
@@ -98,8 +99,11 @@ export async function assertStudentEnrolledByQuiz(
   const studentId = context.req.session.userId!;
   let _id: string = "";
   if ("_id" in args.input) {
-    _id = (await getQuizById(args.input._id)).courseId.toString();
+    _id = args.input._id;
+  } else if ("quizId" in args.input) {
+    _id = args.input.quizId;
   }
+  _id = (await getQuizById(_id)).courseId.toString();
   const isEnrolled = await isStudentIsCourseEnrolled(studentId, _id);
   if (!isEnrolled) {
     throw new Unauthorized();

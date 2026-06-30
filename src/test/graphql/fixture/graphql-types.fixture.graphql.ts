@@ -1,6 +1,7 @@
 import {
   booleanValues,
   numberValues,
+  objectArrayValues,
   objectValues,
   stringArrayValues,
   stringValues,
@@ -12,6 +13,7 @@ export const graphqlTypeValues = {
   Boolean: booleanValues,
   StringArray: stringArrayValues,
   Object: objectValues,
+  ObjectArray: objectArrayValues,
 };
 
 export const invalidGraphQLTypes = {
@@ -44,6 +46,14 @@ export const invalidGraphQLTypes = {
     ...graphqlTypeValues.StringArray,
     ...graphqlTypeValues.Number,
     ...graphqlTypeValues.String,
+  ],
+  ObjectArray: [
+    ...graphqlTypeValues.Boolean,
+    ...graphqlTypeValues.Object,
+    ...graphqlTypeValues.Number,
+    ...graphqlTypeValues.String,
+    ...graphqlTypeValues.StringArray,
+    ...graphqlTypeValues.ObjectArray,
   ],
 };
 

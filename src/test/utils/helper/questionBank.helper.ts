@@ -44,3 +44,21 @@ export async function createRandomQuestionBanksAndGetIds(
   }
   return questionBankIds;
 }
+
+export async function createRandomQuestionBanksAndGetIdsAndGetAnswers(
+  courseId: string,
+  adminCookie: string,
+  minCount: number = 10,
+  maxCount: number = 20,
+) {
+  const count =
+    Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+  const questionBanks: { questionId: string; answer: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    const randomType = types[Math.floor(Math.random() * types.length)];
+    const questionBank = createRandomQuestionBank(randomType, courseId);
+    const _id = await createQuestionBankAndGetId(questionBank, adminCookie);
+    questionBanks.push({ questionId: _id, answer: questionBank.answer });
+  }
+  return questionBanks;
+}

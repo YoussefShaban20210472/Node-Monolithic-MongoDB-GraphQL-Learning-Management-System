@@ -481,3 +481,31 @@ export function generateRandomInvalidIDArrayStrings(
     return generateRandomInvalidIDStrings();
   });
 }
+function generateRandomInvalidAnswerStrings(
+  minCount: number = 20,
+  maxCount: number = 40,
+): string[] {
+  return [
+    ...generateRandomAlphabetStrings(0, 0, minCount, maxCount),
+    ...generateRandomAlphabetStrings(256, 1000, minCount, maxCount),
+
+    ...generateRandomNumberStrings(1, 255, minCount, maxCount),
+    ...generateRandomSpecialCharacterStrings(1, 255, minCount, maxCount),
+
+    ...generateRandomAlphanumericStrings(1, 255, minCount, maxCount),
+    ...generateRandomMixStrings(1, 255, minCount, maxCount),
+  ];
+}
+export function generateRandomInvalidQuestionAnswerArray(
+  minCount: number = 20,
+  maxCount: number = 40,
+): { questionId: string; answer: string }[] {
+  const invalidIds = generateRandomInvalidIDStrings(minCount, maxCount);
+  const invalidAnswers = generateRandomInvalidAnswerStrings(minCount, maxCount);
+  const count = Math.min(invalidAnswers.length, invalidIds.length);
+  const answers: { questionId: string; answer: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    answers.push({ answer: invalidAnswers[i], questionId: invalidIds[i] });
+  }
+  return answers;
+}
