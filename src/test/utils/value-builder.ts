@@ -85,8 +85,35 @@ export const invalidGraphQLDomains = {
     ...generateRandomAlphanumericStrings(20, 255),
     ...generateRandomMixStrings(20, 255),
   ],
-  AssignmentScore: [
+  Score: [
     ...generateRandomIntegers(-10000, -1),
     ...generateRandomIntegers(101, 10000),
+  ],
+  Question: [
+    ...generateRandomAlphabetStrings(0, 9),
+    ...generateRandomAlphabetStrings(501, 1000),
+
+    ...generateRandomNumberStrings(10, 500),
+    ...generateRandomSpecialCharacterStrings(10, 500),
+
+    ...generateRandomAlphanumericStrings(10, 500),
+    ...generateRandomMixStrings(10, 500),
+  ],
+  Answer: [
+    ...generateRandomAlphabetStrings(0, 0),
+    ...generateRandomAlphabetStrings(256, 1000),
+
+    ...generateRandomNumberStrings(1, 255),
+    ...generateRandomSpecialCharacterStrings(1, 255),
+
+    ...generateRandomAlphanumericStrings(1, 255),
+    ...generateRandomMixStrings(1, 255),
+  ],
+  QuestionType: [
+    ...generateRandomInvalidEnumStrings(["mcq", "true_false", "short_answer"]),
+  ],
+  Choice: [
+    ...generateRandomInvalidStringArrayStrings(1, 255),
+    generateRandomAlphabetStrings(1, 255, 6, 100),
   ],
 };

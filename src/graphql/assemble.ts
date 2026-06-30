@@ -12,6 +12,8 @@ import { attendanceSchema } from "./schema/attendance.schema.graphql.js";
 import { attendanceResolver } from "./resolver/attendance.resolver.graphql.js";
 import { assignmentSchema } from "./schema/assignment.schema.graphql.js";
 import { assignmentResolver } from "./resolver/assignment.resolver.graphql.js";
+import { questionBankSchema } from "./schema/questionBank.schema.graphql.js";
+import { questionBankResolver } from "./resolver/questionBank.resolver.graphql.js";
 
 export const typeDefs = [
   userSchema,
@@ -21,6 +23,7 @@ export const typeDefs = [
   lessonSchema,
   attendanceSchema,
   assignmentSchema,
+  questionBankSchema,
 ];
 export const resolvers = [
   userResolver,
@@ -30,4 +33,5 @@ export const resolvers = [
   lessonResolver,
   attendanceResolver,
   assignmentResolver,
+  questionBankResolver,
 ];
